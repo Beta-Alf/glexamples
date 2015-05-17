@@ -12,6 +12,9 @@
 *.la
 *.a
 
+# Swap Files of CMake
+*.swp
+
 # Build dir
 build*
 debug_build
