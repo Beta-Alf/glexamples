@@ -22,6 +22,7 @@ namespace gloperate
     class AbstractViewportCapability;
     class AbstractPerspectiveProjectionCapability;
     class AbstractCameraCapability;
+	class AbstractVirtualTimeCapability;
 }
 
 class AnimationExample : public gloperate::Painter
@@ -42,6 +43,7 @@ protected:
     gloperate::AbstractViewportCapability * m_viewportCapability;
     gloperate::AbstractPerspectiveProjectionCapability * m_projectionCapability;
     gloperate::AbstractCameraCapability * m_cameraCapability;
+	gloperate::AbstractVirtualTimeCapability * m_timeCapability;
 
     /* members */
     globjects::ref_ptr<gloperate::AdaptiveGrid> m_grid;

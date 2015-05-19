@@ -37,6 +37,7 @@ AnimationExample::AnimationExample(gloperate::ResourceManager & resourceManager)
 ,   m_viewportCapability(addCapability(new gloperate::ViewportCapability()))
 ,   m_projectionCapability(addCapability(new gloperate::PerspectiveProjectionCapability(m_viewportCapability)))
 ,   m_cameraCapability(addCapability(new gloperate::CameraCapability()))
+,	m_timeCapability(addCapability(new gloperate::VirtualTimeCapability()))
 {
 }
 
@@ -107,15 +108,17 @@ void AnimationExample::onPaint()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glEnable(GL_DEPTH_TEST);
+	
 
-    const auto transform = m_projectionCapability->projection() * m_cameraCapability->view();
+	const auto transform = m_projectionCapability->projection() * m_cameraCapability->view();
     const auto eye = m_cameraCapability->eye();
 
     m_grid->update(eye, transform);
     m_grid->draw();
 
+	const auto objectTransform = transform * glm::translate(glm::mat4(), glm::vec3(1.f, 0.f, 0.f) * m_timeCapability->time());
     m_program->use();
-    m_program->setUniform(m_transformLocation, transform);
+    m_program->setUniform(m_transformLocation, objectTransform);
 
     m_icosahedron->draw();
 
