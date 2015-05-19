@@ -38,15 +38,40 @@ AnimationExample::AnimationExample(gloperate::ResourceManager & resourceManager)
 ,   m_projectionCapability(addCapability(new gloperate::PerspectiveProjectionCapability(m_viewportCapability)))
 ,   m_cameraCapability(addCapability(new gloperate::CameraCapability()))
 ,	m_timeCapability(addCapability(new gloperate::VirtualTimeCapability()))
+,	m_maxDistance(1)
 {
+	setupPropertyGroup();
 }
 
 AnimationExample::~AnimationExample() = default;
 
+void AnimationExample::setupPropertyGroup()
+{
+
+	auto property = addProperty<int>("MaximumDistance", this,
+		&AnimationExample::maxDistance,
+		&AnimationExample::setMaxDistance);
+
+	property->setOptions({
+			{ "minimum", 0 },
+			{ "maximum", 255 },
+			{ "step", 1 } });
+}
+
+int AnimationExample::maxDistance() const
+{
+	return m_maxDistance;
+}
+
+void AnimationExample::setMaxDistance(int maxDistance)
+{
+	m_maxDistance = maxDistance;
+}
+
 void AnimationExample::setupProjection()
 {
     static const auto zNear = 0.3f, zFar = 15.f, fovy = 50.f;
-
+	
     m_projectionCapability->setZNear(zNear);
     m_projectionCapability->setZFar(zFar);
     m_projectionCapability->setFovy(radians(fovy));
@@ -116,7 +141,7 @@ void AnimationExample::onPaint()
     m_grid->update(eye, transform);
     m_grid->draw();
 
-	const auto objectTransform = transform * glm::translate(glm::mat4(), glm::vec3(1.f, 0.f, 0.f) * m_timeCapability->time());
+	const auto objectTransform = transform * glm::translate(glm::mat4(), glm::vec3(m_maxDistance*0.1f, 0.f, 0.f) * m_timeCapability->time());
     m_program->use();
     m_program->setUniform(m_transformLocation, objectTransform);
 

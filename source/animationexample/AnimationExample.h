@@ -32,6 +32,10 @@ public:
     virtual ~AnimationExample();
 
     void setupProjection();
+	void setupPropertyGroup();
+	
+	int maxDistance() const;
+	void setMaxDistance(int maxDistance);
 
 protected:
     virtual void onInitialize() override;
@@ -50,4 +54,7 @@ protected:
     globjects::ref_ptr<gloperate::Icosahedron> m_icosahedron;
     globjects::ref_ptr<globjects::Program> m_program;
     gl::GLint m_transformLocation;
+
+private:
+	int m_maxDistance;
 };
