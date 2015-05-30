@@ -22,6 +22,7 @@ namespace gloperate
     class AbstractViewportCapability;
     class AbstractPerspectiveProjectionCapability;
     class AbstractCameraCapability;
+	class AbstractVirtualTimeCapability;
 }
 
 class AnimationExample : public gloperate::Painter
@@ -31,6 +32,10 @@ public:
     virtual ~AnimationExample();
 
     void setupProjection();
+	void setupPropertyGroup();
+	
+	int maxDistance() const;
+	void setMaxDistance(int maxDistance);
 
 protected:
     virtual void onInitialize() override;
@@ -42,10 +47,14 @@ protected:
     gloperate::AbstractViewportCapability * m_viewportCapability;
     gloperate::AbstractPerspectiveProjectionCapability * m_projectionCapability;
     gloperate::AbstractCameraCapability * m_cameraCapability;
+	gloperate::AbstractVirtualTimeCapability * m_timeCapability;
 
     /* members */
     globjects::ref_ptr<gloperate::AdaptiveGrid> m_grid;
     globjects::ref_ptr<gloperate::Icosahedron> m_icosahedron;
     globjects::ref_ptr<globjects::Program> m_program;
     gl::GLint m_transformLocation;
+
+private:
+	int m_maxDistance;
 };
