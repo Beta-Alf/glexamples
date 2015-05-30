@@ -134,14 +134,13 @@ void AnimationExample::onPaint()
 
     glEnable(GL_DEPTH_TEST);
 	
-
-	const auto transform = m_projectionCapability->projection() * m_cameraCapability->view();
+    const auto transform = m_projectionCapability->projection() * m_cameraCapability->view();
     const auto eye = m_cameraCapability->eye();
 
     m_grid->update(eye, transform);
     m_grid->draw();
 
-	const auto objectTransform = transform * glm::translate(glm::mat4(), glm::vec3(m_maxDistance*0.1f, 0.f, 0.f) * m_timeCapability->time());
+    const auto objectTransform = transform * glm::translate(glm::mat4(), glm::vec3(m_maxDistance*0.1f, 0.f, 0.2f) * m_timeCapability->time());
     m_program->use();
     m_program->setUniform(m_transformLocation, objectTransform);
 

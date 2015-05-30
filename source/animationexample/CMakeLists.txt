@@ -37,11 +37,13 @@ set(source_path "${CMAKE_CURRENT_SOURCE_DIR}/")
 
 set(sources
     ${source_path}/AnimationExample.cpp
+	${source_path}/ParameterAnimatedObject.cpp
     ${source_path}/plugin.cpp
 )
 
 set(api_includes
     ${include_path}/AnimationExample.h
+	${include_path}/ParameterAnimatedObject.h
 )
 
 # Group source files
