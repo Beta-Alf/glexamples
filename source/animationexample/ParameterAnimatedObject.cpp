@@ -16,7 +16,6 @@ void ParameterAnimatedObject::addKeyframe(ParameterKeyframe Keyframe)
     }
     else
     {
-        auto compare =
         m_keyframes.insert(
                     std::upper_bound(m_keyframes.begin(),
                                      m_keyframes.end(),
@@ -33,7 +32,7 @@ void ParameterAnimatedObject::draw(double time)
         return;
 
 
-    Frame& before, after;
+	Frame& before, after;
     before = after = m_keyframes[0];
     for(auto& curFrame : m_keyframes)
     {
@@ -42,7 +41,7 @@ void ParameterAnimatedObject::draw(double time)
             before=after=curFrame;
             break;
         }
-        if(curFrame.time < before)
+        if(curFrame.time < before.time)
         {
             before = curFrame;
         }
@@ -53,11 +52,11 @@ void ParameterAnimatedObject::draw(double time)
         }
     }
 
-    auto transform = interpolate(before, after, t);
+    auto transform = interpolate(before, after, time);
 
     m_program->use();
 
-    m_animated->draw();
+    //m_animated->draw();
 }
 
 glm::mat4 ParameterAnimatedObject::interpolate(ParameterKeyframe First, ParameterKeyframe Second, double time)
