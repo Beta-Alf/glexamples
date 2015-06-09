@@ -25,15 +25,15 @@ void ParameterAnimatedObject::addKeyframe(ParameterKeyframe Keyframe)
     }
 }
 
-void ParameterAnimatedObject::draw(double time)
+void ParameterAnimatedObject::draw(float time)
 {
 
-    if(m_keyframes.empty)
+    if(m_keyframes.empty())
         return;
 
 
-	Frame& before, after;
-    before = after = m_keyframes[0];
+	Frame& before = m_keyframes[0]; 
+	Frame& after = m_keyframes[0];
     for(auto& curFrame : m_keyframes)
     {
         if(curFrame.time == time)
@@ -59,13 +59,14 @@ void ParameterAnimatedObject::draw(double time)
     //m_animated->draw();
 }
 
-glm::mat4 ParameterAnimatedObject::interpolate(ParameterKeyframe First, ParameterKeyframe Second, double time)
+glm::mat4 ParameterAnimatedObject::interpolate(ParameterKeyframe First, ParameterKeyframe Second, float time)
 {
-    double dist = Second.time - First.time;
-    double pos = time - First.time; // The distance to the first frame
-    double normPos = pos/dist;	// Normalized position between 0 an 1
-    glm::vec3 translation = glm::lerp(First.translation, Second.translation, normPos);
-    glm::quat rotation = glm::lerp(First.rotation, Second.rotation, normPos);
-    glm::vec3 scale = glm::lerp(First.scale, Second.scale, normPos);
+    float dist = Second.time - First.time;
+    float pos = time - First.time; // The distance to the first frame
+    float normPos = pos/dist;	// Normalized position between 0 an 1
+    glm::vec3 translation = glm::mix(First.translation, Second.translation, normPos);
+    glm::quat rotation = glm::mix(First.rotation, Second.rotation, normPos);
+    glm::vec3 scale = glm::mix(First.scale, Second.scale, normPos);
 
+	return glm::mat4();
 }

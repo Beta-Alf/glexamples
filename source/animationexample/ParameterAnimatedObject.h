@@ -13,7 +13,7 @@ namespace globjects
 
 struct ParameterKeyframe
 {
-    double time;
+    float time;
     glm::vec3 translation;
     glm::vec3 scale;
     glm::quat rotation;
@@ -23,8 +23,8 @@ class ParameterAnimatedObject
 {
     ParameterAnimatedObject() = default;
     void addKeyframe(ParameterKeyframe Keyframe);
-    void draw(double time);
-    glm::mat4 interpolate(ParameterKeyframe First, ParameterKeyframe Second, double t);
+    void draw(float time);
+    glm::mat4 interpolate(ParameterKeyframe First, ParameterKeyframe Second, float t);
 
     std::vector<ParameterKeyframe> m_keyframes;
     globjects::ref_ptr<globjects::Program> m_program;
