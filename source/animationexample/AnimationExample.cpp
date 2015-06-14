@@ -104,16 +104,21 @@ void AnimationExample::onInitialize()
     keyframe.time = 0.f;
     keyframe.translation = glm::vec3{0.f,0.f,0.f};
     keyframe.rotation = glm::quat();
-    keyframe.scale = glm::vec3();
+    keyframe.scale = glm::vec3(1.f, 1.f, 1.f);
     m_animation->addKeyframe(keyframe);
     keyframe.time = 1.f;
-    keyframe.translation = glm::vec3{3.f,0.f,0.f};
+    keyframe.translation = glm::vec3{1.f,0.f,0.f};
+    m_animation->addKeyframe(keyframe);
+    keyframe.time = 4.f;
+    keyframe.translation = glm::vec3{-1.f,0.f,5.f};
     m_animation->addKeyframe(keyframe);
 
 
     glClearColor(0.85f, 0.87f, 0.91f, 1.0f);
 
     setupProjection();
+
+    m_timeCapability->setLoopDuration(5);
 }
 
 void AnimationExample::onPaint()

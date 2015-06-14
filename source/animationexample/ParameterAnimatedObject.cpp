@@ -52,13 +52,12 @@ void ParameterAnimatedObject::addKeyframe(ParameterKeyframe Keyframe)
 
 void ParameterAnimatedObject::draw(float time, const glm::mat4& viewProjection)
 {
-    time = time - (int)time;
     glm::mat4 model;
 
     if(!m_keyframes.empty())
     {
-        Frame& before = m_keyframes[0];
-        Frame& after = m_keyframes[0];
+        Frame before = m_keyframes[0];
+        Frame after = m_keyframes[0];
         for(auto& curFrame : m_keyframes)
         {
             if(curFrame.time == time)
@@ -66,11 +65,11 @@ void ParameterAnimatedObject::draw(float time, const glm::mat4& viewProjection)
                 before=after=curFrame;
                 break;
             }
-            if(curFrame.time < before.time)
+            if(curFrame.time < time && curFrame.time > before.time)
             {
                 before = curFrame;
             }
-            else
+            if(curFrame.time > time)
             {
                 after = curFrame;
                 break;
@@ -82,7 +81,7 @@ void ParameterAnimatedObject::draw(float time, const glm::mat4& viewProjection)
     while(glGetError() != GL_NO_ERROR);
 
 	m_program->use();
-    m_program->setUniform(m_transformLocation, model * viewProjection);
+    m_program->setUniform(m_transformLocation, viewProjection * model);
 
     m_animated->draw();
 
@@ -100,10 +99,14 @@ glm::mat4 ParameterAnimatedObject::interpolate(Frame First, Frame Second, float 
     float dist = Second.time - First.time;
     float pos = time - First.time; // The distance to the first frame
     float normPos = pos/dist;	// Normalized position between 0 an 1
+    normPos = normPos < 0 ? 0 : normPos;
+    normPos = normPos > 1 ? 1 : normPos;
     glm::vec3 translation = glm::mix(First.translation, Second.translation, normPos);
-    //glm::quat rotation = glm::mix(First.rotation, Second.rotation, normPos);
-    //glm::vec3 scale = glm::mix(First.scale, Second.scale, normPos);
+    glm::quat rotation = glm::mix(First.rotation, Second.rotation, normPos);
+    glm::vec3 scale = glm::mix(First.scale, Second.scale, normPos);
     glm::mat4 transform;
+    transform = glm::scale(transform, scale);
+    transform = glm::mat4_cast(rotation) * transform;
     transform = glm::translate(transform, translation);
 
     return transform;
