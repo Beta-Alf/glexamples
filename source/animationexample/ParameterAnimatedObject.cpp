@@ -105,9 +105,8 @@ glm::mat4 ParameterAnimatedObject::interpolate(Frame First, Frame Second, float 
     glm::quat rotation = glm::mix(First.rotation, Second.rotation, normPos);
     glm::vec3 scale = glm::mix(First.scale, Second.scale, normPos);
     glm::mat4 transform;
-    transform = glm::scale(transform, scale);
-    transform = glm::mat4_cast(rotation) * transform;
     transform = glm::translate(transform, translation);
-
+    transform = glm::scale(transform, scale);
+    transform = transform * glm::mat4_cast(rotation);
     return transform;
 }

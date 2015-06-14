@@ -111,6 +111,8 @@ void AnimationExample::onInitialize()
     m_animation->addKeyframe(keyframe);
     keyframe.time = 4.f;
     keyframe.translation = glm::vec3{-1.f,0.f,5.f};
+    keyframe.scale = glm::vec3(3.f,1.f,1.f);
+    keyframe.rotation = glm::quat{0.f,0.7f,0.f,0.7f};
     m_animation->addKeyframe(keyframe);
 
 
