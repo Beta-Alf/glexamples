@@ -8,6 +8,7 @@
 
 #include <gloperate/painter/Painter.h>
 
+class ParameterAnimatedObject;
 
 namespace globjects
 {
@@ -51,9 +52,7 @@ protected:
 
     /* members */
     globjects::ref_ptr<gloperate::AdaptiveGrid> m_grid;
-    globjects::ref_ptr<gloperate::Icosahedron> m_icosahedron;
-    globjects::ref_ptr<globjects::Program> m_program;
-    gl::GLint m_transformLocation;
+	std::unique_ptr<ParameterAnimatedObject> m_animation;
 
 private:
 	int m_maxDistance;

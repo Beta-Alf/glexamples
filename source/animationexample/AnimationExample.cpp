@@ -9,7 +9,7 @@
 #include <globjects/globjects.h>
 #include <globjects/logging.h>
 #include <globjects/DebugMessage.h>
-#include <globjects/Program.h>
+
 
 #include <widgetzeug/make_unique.hpp>
 
@@ -23,6 +23,8 @@
 
 #include <gloperate/primitives/AdaptiveGrid.h>
 #include <gloperate/primitives/Icosahedron.h>
+
+#include <ParameterAnimatedObject.h>
 
 
 using namespace gl;
@@ -95,15 +97,8 @@ void AnimationExample::onInitialize()
     m_grid = new gloperate::AdaptiveGrid{};
     m_grid->setColor({0.6f, 0.6f, 0.6f});
 
-    m_icosahedron = new gloperate::Icosahedron{3};
+	m_animation = std::make_unique<ParameterAnimatedObject>(new gloperate::Icosahedron{ 3 });
 
-    m_program = new Program{};
-    m_program->attach(
-        Shader::fromFile(GL_VERTEX_SHADER, "data/animationexample/icosahedron.vert"),
-        Shader::fromFile(GL_FRAGMENT_SHADER, "data/animationexample/icosahedron.frag")
-    );
-
-    m_transformLocation = m_program->getUniformLocation("transform");
 
     glClearColor(0.85f, 0.87f, 0.91f, 1.0f);
 
@@ -141,12 +136,10 @@ void AnimationExample::onPaint()
     m_grid->draw();
 
     const auto objectTransform = transform * glm::translate(glm::mat4(), glm::vec3(m_maxDistance*0.1f, 0.f, 0.2f) * m_timeCapability->time());
-    m_program->use();
-    m_program->setUniform(m_transformLocation, objectTransform);
+    
 
-    m_icosahedron->draw();
+	m_animation->draw(m_timeCapability->time(), transform);
 
-    m_program->release();
 
     Framebuffer::unbind(GL_FRAMEBUFFER);
 }

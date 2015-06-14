@@ -1,9 +1,30 @@
 #include "ParameterAnimatedObject.h"
 #include <algorithm>
-#include <gloperate/primitives/AbstractDrawable.h>
+
+#include <glbinding/gl/enum.h>
+
+#include <globjects/globjects.h>
 #include <globjects/Program.h>
 
+#include <gloperate/primitives/Icosahedron.h>
+
+
+using namespace gl;
+using namespace globjects;
+
 typedef ParameterKeyframe Frame;
+
+ParameterAnimatedObject::ParameterAnimatedObject(gloperate::Icosahedron* animated)
+{
+	m_animated = animated;
+
+	m_program->attach(
+		Shader::fromFile(GL_VERTEX_SHADER, "data/animationexample/paramAnim.vert"),
+		Shader::fromFile(GL_FRAGMENT_SHADER, "data/animationexample/icosahedron.frag")
+		);
+
+	m_transformLocation = m_program->getUniformLocation("transform");
+}
 
 void ParameterAnimatedObject::addKeyframe(ParameterKeyframe Keyframe)
 {
@@ -25,7 +46,7 @@ void ParameterAnimatedObject::addKeyframe(ParameterKeyframe Keyframe)
     }
 }
 
-void ParameterAnimatedObject::draw(float time)
+void ParameterAnimatedObject::draw(float time, const glm::mat4& viewProjection)
 {
 
     if(m_keyframes.empty())
@@ -52,14 +73,17 @@ void ParameterAnimatedObject::draw(float time)
         }
     }
 
-    auto transform = interpolate(before, after, time);
+    auto model = interpolate(before, after, time);
 
-    m_program->use();
+	m_program->use();
+	m_program->setUniform(m_transformLocation, model * viewProjection);
 
-    //m_animated->draw();
+    m_animated->draw();
+
+	m_program->release();
 }
 
-glm::mat4 ParameterAnimatedObject::interpolate(ParameterKeyframe First, ParameterKeyframe Second, float time)
+glm::mat4 ParameterAnimatedObject::interpolate(Frame First, Frame Second, float time)
 {
     float dist = Second.time - First.time;
     float pos = time - First.time; // The distance to the first frame
