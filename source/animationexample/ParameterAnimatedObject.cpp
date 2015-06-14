@@ -1,5 +1,8 @@
+#include <iostream>
 #include "ParameterAnimatedObject.h"
 #include <algorithm>
+
+#include "glm/gtc/matrix_transform.hpp"
 
 #include <glbinding/gl/enum.h>
 
@@ -16,14 +19,15 @@ typedef ParameterKeyframe Frame;
 
 ParameterAnimatedObject::ParameterAnimatedObject(gloperate::Icosahedron* animated)
 {
-	m_animated = animated;
+    m_animated = animated;
 
-	m_program->attach(
+    m_program = new Program{};
+    m_program->attach(
 		Shader::fromFile(GL_VERTEX_SHADER, "data/animationexample/paramAnim.vert"),
 		Shader::fromFile(GL_FRAGMENT_SHADER, "data/animationexample/icosahedron.frag")
-		);
+        );
 
-	m_transformLocation = m_program->getUniformLocation("transform");
+    m_transformLocation = m_program->getUniformLocation("transform");
 }
 
 void ParameterAnimatedObject::addKeyframe(ParameterKeyframe Keyframe)
@@ -48,39 +52,47 @@ void ParameterAnimatedObject::addKeyframe(ParameterKeyframe Keyframe)
 
 void ParameterAnimatedObject::draw(float time, const glm::mat4& viewProjection)
 {
+    time = time - (int)time;
+    glm::mat4 model;
 
-    if(m_keyframes.empty())
-        return;
-
-
-	Frame& before = m_keyframes[0]; 
-	Frame& after = m_keyframes[0];
-    for(auto& curFrame : m_keyframes)
+    if(!m_keyframes.empty())
     {
-        if(curFrame.time == time)
+        Frame& before = m_keyframes[0];
+        Frame& after = m_keyframes[0];
+        for(auto& curFrame : m_keyframes)
         {
-            before=after=curFrame;
-            break;
+            if(curFrame.time == time)
+            {
+                before=after=curFrame;
+                break;
+            }
+            if(curFrame.time < before.time)
+            {
+                before = curFrame;
+            }
+            else
+            {
+                after = curFrame;
+                break;
+            }
         }
-        if(curFrame.time < before.time)
-        {
-            before = curFrame;
-        }
-        else
-        {
-            after = curFrame;
-            break;
-        }
-    }
 
-    auto model = interpolate(before, after, time);
+        model = interpolate(before, after, time);
+    }
+    while(glGetError() != GL_NO_ERROR);
 
 	m_program->use();
-	m_program->setUniform(m_transformLocation, model * viewProjection);
+    m_program->setUniform(m_transformLocation, model * viewProjection);
 
     m_animated->draw();
 
-	m_program->release();
+    m_program->release();
+
+    while(auto a = glGetError() != GL_NO_ERROR)
+    {
+        std::cout << "Error detected" << std::endl;
+        std::cout << a << std::endl;
+    }
 }
 
 glm::mat4 ParameterAnimatedObject::interpolate(Frame First, Frame Second, float time)
@@ -89,8 +101,10 @@ glm::mat4 ParameterAnimatedObject::interpolate(Frame First, Frame Second, float 
     float pos = time - First.time; // The distance to the first frame
     float normPos = pos/dist;	// Normalized position between 0 an 1
     glm::vec3 translation = glm::mix(First.translation, Second.translation, normPos);
-    glm::quat rotation = glm::mix(First.rotation, Second.rotation, normPos);
-    glm::vec3 scale = glm::mix(First.scale, Second.scale, normPos);
+    //glm::quat rotation = glm::mix(First.rotation, Second.rotation, normPos);
+    //glm::vec3 scale = glm::mix(First.scale, Second.scale, normPos);
+    glm::mat4 transform;
+    transform = glm::translate(transform, translation);
 
-	return glm::mat4();
+    return transform;
 }

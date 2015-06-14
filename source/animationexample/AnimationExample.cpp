@@ -97,7 +97,18 @@ void AnimationExample::onInitialize()
     m_grid = new gloperate::AdaptiveGrid{};
     m_grid->setColor({0.6f, 0.6f, 0.6f});
 
-	m_animation = std::make_unique<ParameterAnimatedObject>(new gloperate::Icosahedron{ 3 });
+    auto ParObj = new ParameterAnimatedObject{new gloperate::Icosahedron{3}};
+
+    m_animation = std::unique_ptr<ParameterAnimatedObject>{ParObj};
+    ParameterKeyframe keyframe;
+    keyframe.time = 0.f;
+    keyframe.translation = glm::vec3{0.f,0.f,0.f};
+    keyframe.rotation = glm::quat();
+    keyframe.scale = glm::vec3();
+    m_animation->addKeyframe(keyframe);
+    keyframe.time = 1.f;
+    keyframe.translation = glm::vec3{3.f,0.f,0.f};
+    m_animation->addKeyframe(keyframe);
 
 
     glClearColor(0.85f, 0.87f, 0.91f, 1.0f);
@@ -134,9 +145,6 @@ void AnimationExample::onPaint()
 
     m_grid->update(eye, transform);
     m_grid->draw();
-
-    const auto objectTransform = transform * glm::translate(glm::mat4(), glm::vec3(m_maxDistance*0.1f, 0.f, 0.2f) * m_timeCapability->time());
-    
 
 	m_animation->draw(m_timeCapability->time(), transform);
 
