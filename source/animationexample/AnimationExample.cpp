@@ -108,6 +108,10 @@ void AnimationExample::onInitialize()
     glClearColor(0.85f, 0.87f, 0.91f, 1.0f);
 
     setupProjection();
+
+	md2LoaderInstance = md2Loader();
+	md2LoaderInstance.loadModel("data/animationexample/Samurai.md2");
+	md2LoaderInstance.modelToGPU();
 }
 
 void AnimationExample::onPaint()
@@ -144,7 +148,8 @@ void AnimationExample::onPaint()
     m_program->use();
     m_program->setUniform(m_transformLocation, objectTransform);
 
-    m_icosahedron->draw();
+    //m_icosahedron->draw();
+	md2LoaderInstance.drawModel();
 
     m_program->release();
 

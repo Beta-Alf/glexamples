@@ -39,11 +39,16 @@ set(sources
     ${source_path}/AnimationExample.cpp
 	${source_path}/ParameterAnimatedObject.cpp
     ${source_path}/plugin.cpp
+    ${source_path}/md2Loader.cpp
+    ${source_path}/VertexAnimatedObject.cpp
 )
 
 set(api_includes
     ${include_path}/AnimationExample.h
 	${include_path}/ParameterAnimatedObject.h
+    ${include_path}/md2Loader.h
+    ${include_path}/VertexAnimatedObject.h
+    ${include_path}/anorms.h
 )
 
 # Group source files

@@ -8,6 +8,8 @@
 
 #include <gloperate/painter/Painter.h>
 
+#include <md2Loader.h>
+
 
 namespace globjects
 {
@@ -54,6 +56,9 @@ protected:
     globjects::ref_ptr<gloperate::Icosahedron> m_icosahedron;
     globjects::ref_ptr<globjects::Program> m_program;
     gl::GLint m_transformLocation;
+
+	md2Loader md2LoaderInstance;
+	
 
 private:
 	int m_maxDistance;
