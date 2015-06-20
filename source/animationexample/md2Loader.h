@@ -59,11 +59,13 @@ struct md2_header
 class md2Loader
 {
 public:
-	md2Loader() = default;
+	md2Loader();
 	~md2Loader();
 
 	gloperate::PolygonalGeometry firstFrame;
-	gloperate::PolygonalDrawable firstFrameDrawable;
+	//gloperate::PolygonalDrawable firstFrameDrawable;
+	globjects::ref_ptr<gloperate::PolygonalDrawable> firstFrameDrawable;
+
 
 	md2_header header; //header of the object-file
 	FILE* model; //opbject-file
