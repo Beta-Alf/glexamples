@@ -15,14 +15,19 @@
 
 #include <gloperate/base/RenderTargetType.h>
 
+#include <gloperate/resources/ResourceManager.h>
+
 #include <gloperate/painter/TargetFramebufferCapability.h>
 #include <gloperate/painter/ViewportCapability.h>
 #include <gloperate/painter/PerspectiveProjectionCapability.h>
 #include <gloperate/painter/CameraCapability.h>
 #include <gloperate/painter/VirtualTimeCapability.h>
+#include <gloperate-assimp/AssimpMeshLoader.h>
 
 #include <gloperate/primitives/AdaptiveGrid.h>
-#include <gloperate/primitives/Icosahedron.h>
+#include <gloperate/primitives/AbstractDrawable.h>
+#include <gloperate/primitives/PolygonalDrawable.h>
+
 
 #include <ParameterAnimatedObject.h>
 
@@ -96,10 +101,12 @@ void AnimationExample::onInitialize()
 
     m_grid = new gloperate::AdaptiveGrid{};
     m_grid->setColor({0.6f, 0.6f, 0.6f});
+    gloperate::PolygonalGeometry* buddha = m_resourceManager.load<gloperate::PolygonalGeometry>(std::string("data/animationexample/buddha.obj"));
 
-    auto ParObj = new ParameterAnimatedObject{new gloperate::Icosahedron{3}};
 
-    m_animation = std::unique_ptr<ParameterAnimatedObject>{ParObj};
+    auto ParObj = new ParameterAnimatedObject(new gloperate::PolygonalDrawable(*buddha));
+
+    m_animation = std::unique_ptr<ParameterAnimatedObject>(ParObj);
     ParameterKeyframe keyframe;
     keyframe.time = 0.f;
     keyframe.translation = glm::vec3{0.f,0.f,0.f};

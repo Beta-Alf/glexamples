@@ -15,7 +15,7 @@ namespace globjects
 
 namespace gloperate
 {
-	class Icosahedron;
+    class AbstractDrawable;
 }
 
 struct ParameterKeyframe
@@ -29,7 +29,7 @@ struct ParameterKeyframe
 class ParameterAnimatedObject
 {
 public:
-    ParameterAnimatedObject(gloperate::Icosahedron* animated);
+    ParameterAnimatedObject(gloperate::AbstractDrawable* animated);
     void addKeyframe(ParameterKeyframe Keyframe);
 	void draw(float time, const glm::mat4& viewProjection);
     glm::mat4 interpolate(ParameterKeyframe First, ParameterKeyframe Second, float t);
@@ -37,6 +37,6 @@ public:
 private:
     std::vector<ParameterKeyframe> m_keyframes;
     globjects::ref_ptr<globjects::Program> m_program;
-	globjects::ref_ptr<gloperate::Icosahedron> m_animated;
+    std::shared_ptr<gloperate::AbstractDrawable> m_animated;
 	gl::GLint m_transformLocation;
 };

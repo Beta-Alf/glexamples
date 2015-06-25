@@ -9,7 +9,7 @@
 #include <globjects/globjects.h>
 #include <globjects/Program.h>
 
-#include <gloperate/primitives/Icosahedron.h>
+#include <gloperate/primitives/AbstractDrawable.h>
 
 
 using namespace gl;
@@ -17,9 +17,9 @@ using namespace globjects;
 
 typedef ParameterKeyframe Frame;
 
-ParameterAnimatedObject::ParameterAnimatedObject(gloperate::Icosahedron* animated)
+ParameterAnimatedObject::ParameterAnimatedObject(gloperate::AbstractDrawable *animated)
 {
-    m_animated = animated;
+    m_animated = std::unique_ptr<gloperate::AbstractDrawable>(animated);
 
     m_program = new Program{};
     m_program->attach(
