@@ -198,12 +198,14 @@ void md2Loader::loadModel(char* filename){
 	}
 }
 
-void md2Loader::modelToGPU(){
-	// Now let's read OpenGL rendering commands
+gloperate::PolygonalGeometry md2Loader::createFrame(int number){
+
+	gloperate::PolygonalGeometry Frame;
+
+// Now let's read OpenGL rendering commands
 	glCommands.resize(header.num_glcmds);
 	fseek(model, header.offset_glcmds, SEEK_SET);
 	fread(&glCommands[0], sizeof(int), header.num_glcmds, model); //write the Gl-Commands into array
-
 	
 	unsigned int i = 0;
 	while (glCommands[i] != 0){ //ist die Anzahl der zu malenden Vertices 0, sind wir fertig
@@ -239,14 +241,33 @@ void md2Loader::modelToGPU(){
 			i++;
 		}
 
+<<<<<<< HEAD
 		firstFrame.setIndices(VaoIndices);
 		firstFrame.setVertices(FrameVertices[0]);
 		firstFrame.setNormals(FrameNormals[0]);
 		firstFrameDrawable = gloperate::PolygonalDrawable(firstFrame);
+=======
+>>>>>>> 70518b4... implemented frameDrawable, adjusted md2Loader and changes AnimationExample to try it out (not quite working yet)
 	}
 
+	Frame.setIndices(VaoIndices);
+	Frame.setVertices(FrameVertices[number]);
+	Frame.setNormals(FrameNormals[number]);
+
+	return Frame;
 }
 
+<<<<<<< HEAD
 void md2Loader::drawModel(){
 	firstFrameDrawable.draw();
 }
+=======
+FrameDrawable md2Loader::modelToGPU(){
+	for (int i = 0; i < header.num_frames; i++){
+		Frames.push_back(createFrame(i));
+	}
+	return FrameDrawable(Frames);
+}
+
+
+>>>>>>> 70518b4... implemented frameDrawable, adjusted md2Loader and changes AnimationExample to try it out (not quite working yet)

@@ -10,6 +10,7 @@
 
 #include <md2Loader.h>
 
+#include <FrameDrawable.h>
 
 namespace globjects
 {
@@ -58,6 +59,7 @@ protected:
     gl::GLint m_transformLocation;
 
 	md2Loader md2LoaderInstance;
+	FrameDrawable md2ModelDrawable;
 	
 
 private:

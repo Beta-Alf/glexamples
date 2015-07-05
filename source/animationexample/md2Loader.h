@@ -6,6 +6,7 @@
 #include <vector>
 #include <gloperate/primitives/PolygonalGeometry.h>
 #include <gloperate/primitives/PolygonalDrawable.h>
+#include <FrameDrawable.h>
 
 // number of vertex normals in anorms.h file used for decompressing normals in a md2 file
 #define NUMVERTEXNORMALS		162
@@ -62,17 +63,24 @@ public:
 	md2Loader();
 	~md2Loader();
 
+<<<<<<< HEAD
 	gloperate::PolygonalGeometry firstFrame;
 	//gloperate::PolygonalDrawable firstFrameDrawable;
 	globjects::ref_ptr<gloperate::PolygonalDrawable> firstFrameDrawable;
 
 
+=======
+>>>>>>> 70518b4... implemented frameDrawable, adjusted md2Loader and changes AnimationExample to try it out (not quite working yet)
 	md2_header header; //header of the object-file
 	FILE* model; //opbject-file
 
+	std::vector<gloperate::PolygonalGeometry> Frames;
+
 	void loadModel(char* filename);
-	void modelToGPU();
+	gloperate::PolygonalGeometry createFrame(int number);
 	void drawModel();
+
+	FrameDrawable modelToGPU();
 
 	std::vector<VertexKeyframe> m_keyframes;
 	globjects::ref_ptr<globjects::Program> m_program;

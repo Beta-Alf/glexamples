@@ -110,8 +110,13 @@ void AnimationExample::onInitialize()
     setupProjection();
 
 	md2LoaderInstance = md2Loader();
+<<<<<<< HEAD
 	md2LoaderInstance.loadModel("data/animationexample/Samurai.md2");
 	md2LoaderInstance.modelToGPU();
+=======
+	md2LoaderInstance.loadModel("data/animationexample/Samourai.md2");
+	md2ModelDrawable = md2LoaderInstance.modelToGPU();
+>>>>>>> 70518b4... implemented frameDrawable, adjusted md2Loader and changes AnimationExample to try it out (not quite working yet)
 }
 
 void AnimationExample::onPaint()
@@ -149,7 +154,7 @@ void AnimationExample::onPaint()
     m_program->setUniform(m_transformLocation, objectTransform);
 
     //m_icosahedron->draw();
-	md2LoaderInstance.drawModel();
+	md2ModelDrawable.draw(m_timeCapability->time());
 
     m_program->release();
 
