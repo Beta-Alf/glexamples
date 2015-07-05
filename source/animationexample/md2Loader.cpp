@@ -171,6 +171,16 @@ typedef VertexKeyframe Frame;
 		{ -0.688191, -0.587785, -0.425325 }
 	};
 
+	md2Loader::md2Loader() : model(nullptr){
+	}
+
+	md2Loader::~md2Loader(){
+		if (model != nullptr)
+		{
+			delete model;
+		}
+	}
+
 void md2Loader::loadModel(char* filename){
 	model = fopen(filename, "rb");
 	fread(&header, sizeof(md2_header), 1, model); // Read header where all info about model is stored

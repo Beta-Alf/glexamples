@@ -13,7 +13,7 @@
 class FrameDrawable : gloperate::AbstractDrawable
 {
 public:
-	FrameDrawable() = default;
+	FrameDrawable();
 	FrameDrawable(const std::vector<gloperate::PolygonalGeometry> &  geometries);
 	~FrameDrawable();
 	void draw(float time);
@@ -21,11 +21,12 @@ public:
 
 protected:
 
-	int numFrames;
-	globjects::ref_ptr<globjects::Buffer>					m_indices;             /**< Index buffer */
-	std::vector<globjects::ref_ptr<globjects::Buffer>>      frame_vertices;            /**< Vertex buffer */
-	std::vector<globjects::ref_ptr<globjects::Buffer>>      frame_normals;             /**< Normal buffer (may be empty) */
-	std::vector<gl::GLsizei>                                frame_sizes;                /**< Number of elements (m_indices) */
+	int m_numFrames;
+	int m_size;
+	globjects::ref_ptr<globjects::Buffer>					m_indices;			       /**< Index buffer */
+	std::vector<globjects::ref_ptr<globjects::Buffer>>      m_frame_vertices;            /**< Vertex buffer */
+	std::vector<globjects::ref_ptr<globjects::Buffer>>      m_frame_normals;             /**< Normal buffer (may be empty) */
+	std::vector<gl::GLsizei>                                m_frame_sizes;               /**< Number of elements (m_indices) */
 	//globjects::ref_ptr<globjects::Buffer>      m_textureCoordinates;  /**< Texture coordinate buffer (may be empty) */
 		
 };

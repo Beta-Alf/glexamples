@@ -13,32 +13,32 @@
 #include <gloperate/primitives/PolygonalGeometry.h>
 
 FrameDrawable::FrameDrawable(const std::vector<gloperate::PolygonalGeometry> & geometries)
-{
+{	
+	// Save number of elements in index buffer
+	m_size = static_cast<gl::GLsizei>(geometries[0].indices().size());
+	
 	//indices are the same for every frame
-	m_indices->setData(geometries[0].indices(), gl::GL_STATIC_DRAW);
+	m_indices->setData(geometries[0].indices(), gl::GL_STATIC_DRAW); // FEHLER!!!!!
 
-	numFrames = geometries.size();
-	for (int i = 0; i < numFrames; i++){
-
-		// Save number of elements in index buffer
-		int m_size = static_cast<gl::GLsizei>(geometries[i].indices().size());
+	m_numFrames = geometries.size();
+	for (int i = 0; i < m_numFrames; i++){
 
 		// Create and copy vertex buffer
-		globjects::ref_ptr<globjects::Buffer> m_vertices = new globjects::Buffer;
-		m_vertices->setData(geometries[i].vertices(), gl::GL_STATIC_DRAW);
+		globjects::ref_ptr<globjects::Buffer> vertices = new globjects::Buffer;
+		vertices->setData(geometries[i].vertices(), gl::GL_STATIC_DRAW);
 
 		// Create and copy normal buffer
-		globjects::ref_ptr<globjects::Buffer> m_normals;
+		globjects::ref_ptr<globjects::Buffer> normals;
 		if (geometries[i].hasNormals())
 		{
-			m_normals = new globjects::Buffer;
-			m_normals->setData(geometries[i].normals(), gl::GL_STATIC_DRAW);
+			normals = new globjects::Buffer;
+			normals->setData(geometries[i].normals(), gl::GL_STATIC_DRAW);
 		}
 
 		//put Data into frame_vectors
-		frame_normals.push_back(m_normals);
-		frame_sizes.push_back(m_size);
-		frame_vertices.push_back(m_vertices);
+		m_frame_normals.push_back(normals);
+		m_frame_sizes.push_back(m_size);
+		m_frame_vertices.push_back(vertices);
 	}
 }
 

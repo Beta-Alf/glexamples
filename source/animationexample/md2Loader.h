@@ -17,19 +17,20 @@ namespace globjects
 	class Program;
 }
 
-struct VertexKeyframe
-{
-	glm::vec3 scale;					/* scale factor */
-	glm::vec3 translate;				/* translation vector */
-	char name[16];						/* frame name */
-	struct md2_vertex *vertices;		/* list of frame's vertices */
-};
-
 struct md2_vertex
 {
 	unsigned char position[3];			/* position */
 	unsigned char normalIndex;			/* normal vector index */
 };
+
+struct VertexKeyframe
+{
+	glm::vec3 scale;					/* scale factor */
+	glm::vec3 translate;				/* translation vector */
+	char name[16];						/* frame name */
+	struct md2_vertex vertices[0];		/* list of frame's vertices */
+};
+
 
 /* MD2 header, source: http://tfc.duke.free.fr/coding/md2-specs-en.html */
 struct md2_header
@@ -69,10 +70,9 @@ public:
 	std::vector<gloperate::PolygonalGeometry> Frames;
 
 	void loadModel(char* filename);
-	gloperate::PolygonalGeometry createFrame(int number);
-	void drawModel();
-
 	FrameDrawable modelToGPU();
+
+	gloperate::PolygonalGeometry createFrame(int number);
 
 	std::vector<VertexKeyframe> m_keyframes;
 	globjects::ref_ptr<globjects::Program> m_program;
