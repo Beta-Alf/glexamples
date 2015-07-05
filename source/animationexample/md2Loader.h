@@ -63,14 +63,6 @@ public:
 	md2Loader();
 	~md2Loader();
 
-<<<<<<< HEAD
-	gloperate::PolygonalGeometry firstFrame;
-	//gloperate::PolygonalDrawable firstFrameDrawable;
-	globjects::ref_ptr<gloperate::PolygonalDrawable> firstFrameDrawable;
-
-
-=======
->>>>>>> 70518b4... implemented frameDrawable, adjusted md2Loader and changes AnimationExample to try it out (not quite working yet)
 	md2_header header; //header of the object-file
 	FILE* model; //opbject-file
 

@@ -241,13 +241,7 @@ gloperate::PolygonalGeometry md2Loader::createFrame(int number){
 			i++;
 		}
 
-<<<<<<< HEAD
-		firstFrame.setIndices(VaoIndices);
-		firstFrame.setVertices(FrameVertices[0]);
-		firstFrame.setNormals(FrameNormals[0]);
-		firstFrameDrawable = gloperate::PolygonalDrawable(firstFrame);
-=======
->>>>>>> 70518b4... implemented frameDrawable, adjusted md2Loader and changes AnimationExample to try it out (not quite working yet)
+
 	}
 
 	Frame.setIndices(VaoIndices);
@@ -257,11 +251,7 @@ gloperate::PolygonalGeometry md2Loader::createFrame(int number){
 	return Frame;
 }
 
-<<<<<<< HEAD
-void md2Loader::drawModel(){
-	firstFrameDrawable.draw();
-}
-=======
+
 FrameDrawable md2Loader::modelToGPU(){
 	for (int i = 0; i < header.num_frames; i++){
 		Frames.push_back(createFrame(i));
@@ -269,5 +259,3 @@ FrameDrawable md2Loader::modelToGPU(){
 	return FrameDrawable(Frames);
 }
 
-
->>>>>>> 70518b4... implemented frameDrawable, adjusted md2Loader and changes AnimationExample to try it out (not quite working yet)
