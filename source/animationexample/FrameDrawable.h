@@ -13,7 +13,7 @@
 class FrameDrawable : gloperate::AbstractDrawable
 {
 public:
-	FrameDrawable();
+	FrameDrawable() = default;
 	FrameDrawable(const std::vector<gloperate::PolygonalGeometry> &  geometries);
 	~FrameDrawable();
 	void draw(float time);

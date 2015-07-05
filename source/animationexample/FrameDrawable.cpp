@@ -53,7 +53,7 @@ void FrameDrawable::draw(){
 
 void FrameDrawable::draw(float time){
 	time *= 10; //for the moment 10 fps 
-	int frame1 = int(time) % numFrames;
+	int frame1 = int(time) % m_numFrames;
 	float interpolationFactor = time - (int)time;
 
 	// Create vertex array object
@@ -66,15 +66,15 @@ void FrameDrawable::draw(float time){
 	//bind frame1
 	auto vertexBinding = m_vao->binding(0);
 	vertexBinding->setAttribute(0);
-	vertexBinding->setBuffer(frame_vertices[frame1], 0, sizeof(glm::vec3));
+	vertexBinding->setBuffer(m_frame_vertices[frame1], 0, sizeof(glm::vec3));
 	vertexBinding->setFormat(3, gl::GL_FLOAT);
 	m_vao->enable(0);
 
-	if (!frame_normals.empty())
+	if (!m_frame_normals.empty())
 	{
 		vertexBinding = m_vao->binding(1);
 		vertexBinding->setAttribute(1);
-		vertexBinding->setBuffer(frame_normals[frame1], 0, sizeof(glm::vec3));
+		vertexBinding->setBuffer(m_frame_normals[frame1], 0, sizeof(glm::vec3));
 		vertexBinding->setFormat(3, gl::GL_FLOAT, gl::GL_TRUE);
 		m_vao->enable(1);
 	}
@@ -82,20 +82,20 @@ void FrameDrawable::draw(float time){
 	//bind frame2
 	vertexBinding = m_vao->binding(2);
 	vertexBinding->setAttribute(2);
-	vertexBinding->setBuffer(frame_vertices[frame1 + 1], 0, sizeof(glm::vec3));
+	vertexBinding->setBuffer(m_frame_vertices[frame1 + 1], 0, sizeof(glm::vec3));
 	vertexBinding->setFormat(3, gl::GL_FLOAT);
 	m_vao->enable(2);
 
-	if (!frame_normals.empty())
+	if (!m_frame_normals.empty())
 	{
 		vertexBinding = m_vao->binding(3);
 		vertexBinding->setAttribute(3);
-		vertexBinding->setBuffer(frame_normals[frame1 + 1], 0, sizeof(glm::vec3));
+		vertexBinding->setBuffer(m_frame_normals[frame1 + 1], 0, sizeof(glm::vec3));
 		vertexBinding->setFormat(3, gl::GL_FLOAT, gl::GL_TRUE);
 		m_vao->enable(3);
 	}
 
-	m_vao->drawElements(gl::GL_TRIANGLES, frame_sizes[frame1] + frame_sizes[frame1 + 1], gl::GL_UNSIGNED_INT, nullptr);
+	m_vao->drawElements(gl::GL_TRIANGLES, m_frame_sizes[frame1] + m_frame_sizes[frame1 + 1], gl::GL_UNSIGNED_INT, nullptr);
 
 	m_vao->unbind();
 
