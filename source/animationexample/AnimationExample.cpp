@@ -70,7 +70,7 @@ void AnimationExample::setMaxDistance(int maxDistance)
 
 void AnimationExample::setupProjection()
 {
-    static const auto zNear = 0.1f, zFar = 100.f, fovy = 50.f;
+    static const auto zNear = 0.1f, zFar = 150.f, fovy = 50.f;
 	
     m_projectionCapability->setZNear(zNear);
     m_projectionCapability->setZFar(zFar);
@@ -108,6 +108,8 @@ void AnimationExample::onInitialize()
     glClearColor(0.85f, 0.87f, 0.91f, 1.0f);
 
     setupProjection();
+
+	m_cameraCapability->setEye(vec3(100.0, 0.0, 0.0));
 
 	md2LoaderInstance = md2Loader();
 	md2LoaderInstance.loadModel("data/animationexample/Samourai.md2");

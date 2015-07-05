@@ -18,7 +18,8 @@ FrameDrawable::FrameDrawable(const std::vector<gloperate::PolygonalGeometry> & g
 	m_size = static_cast<gl::GLsizei>(geometries[0].indices().size());
 	
 	//indices are the same for every frame
-	m_indices->setData(geometries[0].indices(), gl::GL_STATIC_DRAW); // FEHLER!!!!!
+	m_indices = new globjects::Buffer;
+	m_indices->setData(geometries[0].indices(), gl::GL_STATIC_DRAW); 
 
 	m_numFrames = geometries.size();
 	for (int i = 0; i < m_numFrames; i++){
@@ -37,7 +38,6 @@ FrameDrawable::FrameDrawable(const std::vector<gloperate::PolygonalGeometry> & g
 
 		//put Data into frame_vectors
 		m_frame_normals.push_back(normals);
-		m_frame_sizes.push_back(m_size);
 		m_frame_vertices.push_back(vertices);
 	}
 }
@@ -95,8 +95,7 @@ void FrameDrawable::draw(float time){
 		m_vao->enable(3);
 	}
 
-	m_vao->drawElements(gl::GL_TRIANGLES, m_frame_sizes[frame1] + m_frame_sizes[frame1 + 1], gl::GL_UNSIGNED_INT, nullptr);
-
+	m_vao->drawElements(gl::GL_TRIANGLES, m_size, gl::GL_UNSIGNED_INT, nullptr);
 	m_vao->unbind();
 
 }

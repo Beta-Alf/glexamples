@@ -21,12 +21,11 @@ public:
 
 protected:
 
-	int m_numFrames;
-	int m_size;
-	globjects::ref_ptr<globjects::Buffer>					m_indices;			       /**< Index buffer */
+	int m_numFrames;									
+	gl::GLsizei m_size;																	/**< Number of elements (m_indices) */
+	globjects::ref_ptr<globjects::Buffer>					m_indices;					  /**< Index buffer */
 	std::vector<globjects::ref_ptr<globjects::Buffer>>      m_frame_vertices;            /**< Vertex buffer */
 	std::vector<globjects::ref_ptr<globjects::Buffer>>      m_frame_normals;             /**< Normal buffer (may be empty) */
-	std::vector<gl::GLsizei>                                m_frame_sizes;               /**< Number of elements (m_indices) */
 	//globjects::ref_ptr<globjects::Buffer>      m_textureCoordinates;  /**< Texture coordinate buffer (may be empty) */
 		
 };

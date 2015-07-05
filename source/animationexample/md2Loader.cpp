@@ -177,7 +177,7 @@ typedef VertexKeyframe Frame;
 	md2Loader::~md2Loader(){
 		if (model != nullptr)
 		{
-			delete model;
+			fclose(model);
 		}
 	}
 
@@ -200,8 +200,8 @@ void md2Loader::loadModel(char* filename){
 		for (int j = 0; j < header.num_vertices; j++)
 		{
 			FrameVertices[i][j].x = frame->translate[0] + (float(frame->vertices[j].position[0]) * frame->scale[0]);
-			FrameVertices[i][j].y = frame->translate[1] + (float(frame->vertices[j].position[1]) * frame->scale[1]);
-			FrameVertices[i][j].z = frame->translate[2] + (float(frame->vertices[j].position[2]) * frame->scale[2]);
+			FrameVertices[i][j].z = frame->translate[1] + (float(frame->vertices[j].position[1]) * frame->scale[1]); // z and y need to be switched so the model stands upright
+			FrameVertices[i][j].y = frame->translate[2] + (float(frame->vertices[j].position[2]) * frame->scale[2]);
 
 			FrameNormals[i][j] = anorms[frame->vertices[j].normalIndex];
 		}
