@@ -16,7 +16,7 @@ public:
 	FrameDrawable() = default;
 	FrameDrawable(const std::vector<gloperate::PolygonalGeometry> &  geometries);
 	~FrameDrawable();
-	void draw(float time);
+	void draw(int frame1, int frame2);
 	virtual void draw();
 
 protected:

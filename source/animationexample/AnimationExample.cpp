@@ -1,5 +1,7 @@
 #include "AnimationExample.h"
 
+#include<iostream>
+
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -53,9 +55,57 @@ void AnimationExample::setupPropertyGroup()
 		&AnimationExample::setMaxDistance);
 
 	property->setOptions({
-			{ "minimum", 0 },
-			{ "maximum", 255 },
-			{ "step", 1 } });
+		{ "minimum", 0 },
+		{ "maximum", 255 },
+		{ "step", 1 } });
+
+	auto vertexAnimationOptions = addProperty<VertexAnimationOptions>("Vertex_Animations", this,
+		&AnimationExample::vertexAnimation,
+		&AnimationExample::setVertexAnimation);
+
+	vertexAnimationOptions->setChoices({ STAND, RUN, JUMP, SALUTE });
+	vertexAnimationOptions->setStrings({
+		{ STAND, "stand" },
+		{ RUN, "run" },
+		{ JUMP, "jump" },                  
+		{ SALUTE, "salute" } 
+	});
+}
+
+VertexAnimationOptions AnimationExample::vertexAnimation() const{
+	return m_currentVertexAnimation;
+}
+
+void AnimationExample::setVertexAnimation(VertexAnimationOptions animation){
+	switch (animation) {
+	case STAND: 
+		m_firstFrame = 0;
+		m_lastFrame = 39;
+		m_fps = 9;
+		break;
+	case RUN: 
+		m_firstFrame = 40;
+		m_lastFrame = 45;
+		m_fps = 10;
+		break;
+	case JUMP: 
+		m_firstFrame = 66;
+		m_lastFrame = 71;
+		m_fps = 7;
+		break;
+	case SALUTE:
+		m_firstFrame = 84;
+		m_lastFrame = 94;
+		m_fps = 7;
+		break;
+	default:
+		m_firstFrame = 0;
+		m_lastFrame = 0;
+		m_fps = 1;
+		break;
+	}
+	m_oldFrame = m_firstFrame;
+	m_currentFrame = m_firstFrame + 1;
 }
 
 int AnimationExample::maxDistance() const
@@ -99,11 +149,12 @@ void AnimationExample::onInitialize()
 
     m_program = new Program{};
     m_program->attach(
-        Shader::fromFile(GL_VERTEX_SHADER, "data/animationexample/icosahedron.vert"),
-        Shader::fromFile(GL_FRAGMENT_SHADER, "data/animationexample/icosahedron.frag")
+        Shader::fromFile(GL_VERTEX_SHADER, "data/animationexample/vertexanimation.vert"),
+        Shader::fromFile(GL_FRAGMENT_SHADER, "data/animationexample/vertexanimation.frag")
     );
 
     m_transformLocation = m_program->getUniformLocation("transform");
+	m_interpolationLocation = m_program->getUniformLocation("interpol");
 
     glClearColor(0.85f, 0.87f, 0.91f, 1.0f);
 
@@ -114,10 +165,19 @@ void AnimationExample::onInitialize()
 	md2LoaderInstance = md2Loader();
 	md2LoaderInstance.loadModel("data/animationexample/Samourai.md2");
 	md2ModelDrawable = md2LoaderInstance.modelToGPU();
+	m_timeCapability->setLoopDuration(6);
+	m_oldTime = 0;
+	m_Offset = 0;
+	m_interpolationFactor = 0;
+	setVertexAnimation(STAND);
 }
 
 void AnimationExample::onPaint()
 {
+	//dependend on displayed animation (switch with menu later)
+
+	m_currentTime = m_timeCapability->time();
+
     if (m_viewportCapability->hasChanged())
     {
         glViewport(
@@ -146,12 +206,29 @@ void AnimationExample::onPaint()
     m_grid->update(eye, transform);
     m_grid->draw();
 
-    const auto objectTransform = transform * glm::translate(glm::mat4(), glm::vec3(m_maxDistance*0.1f, 0.f, 0.2f) * m_timeCapability->time());
+    const auto objectTransform = transform * glm::translate(glm::mat4(), glm::vec3(m_maxDistance*0.1f, 0.f, 0.2f) * m_currentTime);
     m_program->use();
     m_program->setUniform(m_transformLocation, transform);
 
+	//calculate which frame to draw and how much to interpolate
+	int numFramesAnim = m_lastFrame - m_firstFrame + 1; // the number of frames in the animation
+	float delta = 1.0 / (float)m_fps; // how much time between frames
+	if (m_currentTime < m_oldTime){
+		m_oldTime -= 6; //because I set the Duration to 100. It's ugly, I know.
+	}
+	if (m_currentTime - m_oldTime >= delta){ 
+		m_oldTime = m_currentTime;
+		m_oldFrame = m_currentFrame;
+		m_Offset = (m_Offset + 1) % numFramesAnim; 
+		m_currentFrame = m_firstFrame + m_Offset;
+	}
+
+	m_interpolationFactor = (m_currentTime - m_oldTime) * m_fps;
+	m_program->setUniform(m_interpolationLocation, m_interpolationFactor);
+	
+	md2ModelDrawable.draw(m_oldFrame, m_currentFrame);
     //m_icosahedron->draw();
-	md2ModelDrawable.draw(m_timeCapability->time());
+	
 
     m_program->release();
 

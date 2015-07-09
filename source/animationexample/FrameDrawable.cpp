@@ -48,14 +48,11 @@ FrameDrawable::~FrameDrawable()
 }
 
 void FrameDrawable::draw(){
-	this->draw(0);
+	this->draw(0, 0);
 }
 
-void FrameDrawable::draw(float time){
-	time *= 10; //for the moment 10 fps 
-	int frame1 = int(time) % m_numFrames;
-	float interpolationFactor = time - (int)time;
-
+void FrameDrawable::draw(int frame1, int frame2){
+	
 	// Create vertex array object
 	m_vao = new globjects::VertexArray;
 	m_vao->bind();
@@ -82,7 +79,7 @@ void FrameDrawable::draw(float time){
 	//bind frame2
 	vertexBinding = m_vao->binding(2);
 	vertexBinding->setAttribute(2);
-	vertexBinding->setBuffer(m_frame_vertices[frame1 + 1], 0, sizeof(glm::vec3));
+	vertexBinding->setBuffer(m_frame_vertices[frame2], 0, sizeof(glm::vec3));
 	vertexBinding->setFormat(3, gl::GL_FLOAT);
 	m_vao->enable(2);
 
@@ -90,7 +87,7 @@ void FrameDrawable::draw(float time){
 	{
 		vertexBinding = m_vao->binding(3);
 		vertexBinding->setAttribute(3);
-		vertexBinding->setBuffer(m_frame_normals[frame1 + 1], 0, sizeof(glm::vec3));
+		vertexBinding->setBuffer(m_frame_normals[frame2], 0, sizeof(glm::vec3));
 		vertexBinding->setFormat(3, gl::GL_FLOAT, gl::GL_TRUE);
 		m_vao->enable(3);
 	}

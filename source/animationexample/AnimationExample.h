@@ -28,6 +28,8 @@ namespace gloperate
 	class AbstractVirtualTimeCapability;
 }
 
+enum VertexAnimationOptions { STAND, RUN, JUMP, SALUTE };
+
 class AnimationExample : public gloperate::Painter
 {
 public:
@@ -52,11 +54,28 @@ protected:
     gloperate::AbstractCameraCapability * m_cameraCapability;
 	gloperate::AbstractVirtualTimeCapability * m_timeCapability;
 
+
+
     /* members */
     globjects::ref_ptr<gloperate::AdaptiveGrid> m_grid;
     globjects::ref_ptr<gloperate::Icosahedron> m_icosahedron;
     globjects::ref_ptr<globjects::Program> m_program;
     gl::GLint m_transformLocation;
+	gl::GLint m_timeLocation;
+	gl::GLint m_interpolationLocation;
+	float m_currentTime;
+	float m_oldTime;
+	int m_currentFrame;
+	int m_oldFrame;
+	int m_Offset;
+	int m_firstFrame;
+	int m_lastFrame;
+	int m_fps;
+	float m_interpolationFactor;
+	VertexAnimationOptions m_currentVertexAnimation;
+
+	VertexAnimationOptions vertexAnimation() const;
+	void setVertexAnimation(VertexAnimationOptions animation);
 
 	md2Loader md2LoaderInstance;
 	FrameDrawable md2ModelDrawable;
