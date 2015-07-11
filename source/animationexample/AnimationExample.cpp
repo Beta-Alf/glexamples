@@ -58,25 +58,26 @@ void AnimationExample::setupPropertyGroup()
 		{ "minimum", 0 },
 		{ "maximum", 255 },
 		{ "step", 1 } });
-
+	
 	auto vertexAnimationOptions = addProperty<VertexAnimationOptions>("Vertex_Animations", this,
 		&AnimationExample::vertexAnimation,
 		&AnimationExample::setVertexAnimation);
 
-	vertexAnimationOptions->setChoices({ STAND, RUN, JUMP, SALUTE });
 	vertexAnimationOptions->setStrings({
 		{ STAND, "stand" },
 		{ RUN, "run" },
 		{ JUMP, "jump" },                  
 		{ SALUTE, "salute" } 
 	});
+
+	vertexAnimationOptions->setChoices({ STAND, RUN, JUMP, SALUTE });
 }
 
 VertexAnimationOptions AnimationExample::vertexAnimation() const{
 	return m_currentVertexAnimation;
 }
 
-void AnimationExample::setVertexAnimation(VertexAnimationOptions animation){
+void AnimationExample::setVertexAnimation(const VertexAnimationOptions & animation){
 	switch (animation) {
 	case STAND: 
 		m_firstFrame = 0;
@@ -106,6 +107,7 @@ void AnimationExample::setVertexAnimation(VertexAnimationOptions animation){
 	}
 	m_oldFrame = m_firstFrame;
 	m_currentFrame = m_firstFrame + 1;
+	m_currentVertexAnimation = animation;
 }
 
 int AnimationExample::maxDistance() const

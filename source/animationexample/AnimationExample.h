@@ -75,7 +75,7 @@ protected:
 	VertexAnimationOptions m_currentVertexAnimation;
 
 	VertexAnimationOptions vertexAnimation() const;
-	void setVertexAnimation(VertexAnimationOptions animation);
+	void setVertexAnimation(const VertexAnimationOptions & animation);
 
 	md2Loader md2LoaderInstance;
 	FrameDrawable md2ModelDrawable;
