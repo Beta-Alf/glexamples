@@ -132,6 +132,13 @@ void FrameDrawable::draw(int firstFrame, int lastFrame, int fps, float currentTi
 
 	m_vao->drawElements(gl::GL_TRIANGLES, m_size, gl::GL_UNSIGNED_INT, nullptr);
 	m_vao->unbind();
+	m_program->release();
+
+	while (auto a = gl::glGetError() != gl::GL_NO_ERROR)
+	{
+		std::cout << "Error detected" << std::endl;
+		std::cout << a << std::endl;
+	}
 
 }
 

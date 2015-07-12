@@ -12,6 +12,8 @@
 
 #include <FrameDrawable.h>
 
+class ParameterAnimatedObject;
+
 namespace globjects
 {
     class Program;
@@ -20,7 +22,6 @@ namespace globjects
 namespace gloperate
 {
     class AdaptiveGrid;
-    class Icosahedron;
     class AbstractTargetFramebufferCapability;
     class AbstractViewportCapability;
     class AbstractPerspectiveProjectionCapability;
@@ -29,6 +30,7 @@ namespace gloperate
 }
 
 enum VertexAnimationOptions { STAND, RUN, JUMP, SALUTE };
+enum AnimationTypes { ParameterAnimation, VertexAnimation, RigAnimation};
 
 class AnimationExample : public gloperate::Painter
 {
@@ -38,15 +40,13 @@ public:
 
     void setupProjection();
 	void setupPropertyGroup();
-	
-	int maxDistance() const;
-	void setMaxDistance(int maxDistance);
 
 protected:
     virtual void onInitialize() override;
     virtual void onPaint() override;
 
-protected:
+	void initializeParameterAnimation();
+
     /* capabilities */
     gloperate::AbstractTargetFramebufferCapability * m_targetFramebufferCapability;
     gloperate::AbstractViewportCapability * m_viewportCapability;
@@ -54,13 +54,12 @@ protected:
     gloperate::AbstractCameraCapability * m_cameraCapability;
 	gloperate::AbstractVirtualTimeCapability * m_timeCapability;
 
-
-
     /* members */
     globjects::ref_ptr<gloperate::AdaptiveGrid> m_grid;
-    globjects::ref_ptr<gloperate::Icosahedron> m_icosahedron;
-    globjects::ref_ptr<globjects::Program> m_program;
-   
+	std::unique_ptr<ParameterAnimatedObject> m_animation;
+	
+	AnimationTypes m_currentAnimationType;
+
 	float m_currentTime;
 	
 	//Vertex Animation specifieres
@@ -69,13 +68,15 @@ protected:
 	int m_fps;
 	float m_interpolationFactor;
 	VertexAnimationOptions m_currentVertexAnimation;
+	md2Loader md2LoaderInstance;
+	FrameDrawable md2ModelDrawable;
 
+	//Property-functions
 	VertexAnimationOptions vertexAnimation() const;
 	void setVertexAnimation(const VertexAnimationOptions & animation);
 
-	md2Loader md2LoaderInstance;
-	FrameDrawable md2ModelDrawable;
-	
+	AnimationTypes animationType() const;
+	void setAnimationType(const AnimationTypes & type);
 
 private:
 	int m_maxDistance;

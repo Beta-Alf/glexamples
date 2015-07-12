@@ -55,6 +55,20 @@ AnimationExample::~AnimationExample() = default;
 
 void AnimationExample::setupPropertyGroup()
 {
+	// drop-down menu to switc between Animation types
+	auto animationTypes = addProperty<AnimationTypes>("Animation_Types", this,
+		&AnimationExample::animationType,
+		&AnimationExample::setAnimationType);
+
+	animationTypes->setStrings({
+		{ ParameterAnimation, "parameter animation" },
+		{ VertexAnimation, "vertex animation" },
+		{ RigAnimation, "rig animation" } 
+	});
+
+	animationTypes->setChoices({ ParameterAnimation, VertexAnimation, RigAnimation });
+
+
 	// drop-down menu to switch between Vertex Animations
 	auto vertexAnimationOptions = addProperty<VertexAnimationOptions>("Vertex_Animations", this,
 		&AnimationExample::vertexAnimation,
@@ -68,6 +82,54 @@ void AnimationExample::setupPropertyGroup()
 	});
 
 	vertexAnimationOptions->setChoices({ STAND, RUN, JUMP, SALUTE });
+}
+
+AnimationTypes AnimationExample::animationType() const{
+	return m_currentAnimationType;
+}
+
+void AnimationExample::initializeParameterAnimation(){
+
+	std::cout << "I started Parameter Animation";
+	gloperate::PolygonalGeometry* buddha = m_resourceManager.load<gloperate::PolygonalGeometry>(std::string("data/animationexample/buddha.obj"));
+	auto ParObj = new ParameterAnimatedObject(new gloperate::PolygonalDrawable(*buddha));
+	std::cout << "Buddah is loaded.";
+	m_animation = std::unique_ptr<ParameterAnimatedObject>(ParObj);
+	ParameterKeyframe keyframe;
+	keyframe.time = 0.f;
+	keyframe.translation = glm::vec3{ 0.f, 0.f, 0.f };
+	keyframe.rotation = glm::quat();
+	keyframe.scale = glm::vec3(1.f, 1.f, 1.f);
+	m_animation->addKeyframe(keyframe);
+	keyframe.time = 1.f;
+	keyframe.translation = glm::vec3{ 1.f, 0.f, 0.f };
+	m_animation->addKeyframe(keyframe);
+	keyframe.time = 4.f;
+	keyframe.translation = glm::vec3{ -1.f, 0.f, 5.f };
+	keyframe.scale = glm::vec3(3.f, 1.f, 1.f);
+	keyframe.rotation = glm::quat{ 0.f, 0.7f, 0.f, 0.7f };
+	m_animation->addKeyframe(keyframe);
+}
+
+void AnimationExample::setAnimationType(const AnimationTypes & type){
+	switch (type) {
+	case ParameterAnimation:
+		initializeParameterAnimation();
+		break;
+	case VertexAnimation:
+		md2LoaderInstance = md2Loader();
+		md2LoaderInstance.loadModel("data/animationexample/Samourai.md2");
+		md2ModelDrawable = md2LoaderInstance.modelToGPU();
+		setVertexAnimation(STAND);
+		break;
+	case RigAnimation:
+		break;
+	default:
+		std::cout << "You have to chose an Animation first.";
+		break;
+	}
+
+	m_currentAnimationType = type;
 }
 
 VertexAnimationOptions AnimationExample::vertexAnimation() const{
@@ -138,33 +200,9 @@ void AnimationExample::onInitialize()
 
 	m_cameraCapability->setEye(vec3(100.0, 0.0, 0.0));
 
-   /* gloperate::PolygonalGeometry* buddha = m_resourceManager.load<gloperate::PolygonalGeometry>(std::string("data/animationexample/buddha.obj"));
+	setAnimationType(VertexAnimation);
 
-
-    auto ParObj = new ParameterAnimatedObject(new gloperate::PolygonalDrawable(*buddha));
-
-    m_animation = std::unique_ptr<ParameterAnimatedObject>(ParObj);
-    ParameterKeyframe keyframe;
-    keyframe.time = 0.f;
-    keyframe.translation = glm::vec3{0.f,0.f,0.f};
-    keyframe.rotation = glm::quat();
-    keyframe.scale = glm::vec3(1.f, 1.f, 1.f);
-    m_animation->addKeyframe(keyframe);
-    keyframe.time = 1.f;
-    keyframe.translation = glm::vec3{1.f,0.f,0.f};
-    m_animation->addKeyframe(keyframe);
-    keyframe.time = 4.f;
-    keyframe.translation = glm::vec3{-1.f,0.f,5.f};
-    keyframe.scale = glm::vec3(3.f,1.f,1.f);
-    keyframe.rotation = glm::quat{0.f,0.7f,0.f,0.7f};
-    m_animation->addKeyframe(keyframe);
-	*/
-
-	md2LoaderInstance = md2Loader();
-	md2LoaderInstance.loadModel("data/animationexample/Samourai.md2");
-	md2ModelDrawable = md2LoaderInstance.modelToGPU();
-	m_timeCapability->setLoopDuration(6);
-	setVertexAnimation(STAND);
+	m_timeCapability->setLoopDuration(6); 
 }
 
 void AnimationExample::onPaint()
@@ -201,9 +239,18 @@ void AnimationExample::onPaint()
     m_grid->update(eye, transform);
     m_grid->draw();
 	
-	md2ModelDrawable.draw(m_firstFrame, m_lastFrame, m_fps, m_currentTime, transform);
+	switch (m_currentAnimationType){
+	case ParameterAnimation:
+		//m_animation->draw(m_currentTime, transform);
+		break;
+	case VertexAnimation:
+		md2ModelDrawable.draw(m_firstFrame, m_lastFrame, m_fps, m_currentTime, transform);
+		break;
+	case RigAnimation:
+		break;
+	}
+	
 
-	//m_animation->draw(m_currentTime, transform);
 
     Framebuffer::unbind(GL_FRAMEBUFFER);
 }

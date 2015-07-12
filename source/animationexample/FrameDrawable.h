@@ -35,7 +35,6 @@ protected:
 	std::vector<globjects::ref_ptr<globjects::Buffer>>      m_frame_normals;             /**< Normal buffer (may be empty) */
 	//globjects::ref_ptr<globjects::Buffer>      m_textureCoordinates;  /**< Texture coordinate buffer (may be empty) */
 
-	globjects::ref_ptr<globjects::Program> m_program;
 	gl::GLint m_transformLocation;
 	gl::GLint m_interpolationLocation;
 	float m_interpolationFactor;
@@ -43,5 +42,8 @@ protected:
 	int m_nextFrame;
 	int m_oldFrame;
 	int m_Offset;		
+
+private:
+	globjects::ref_ptr<globjects::Program> m_program;
 };
 
