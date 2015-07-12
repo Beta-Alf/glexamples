@@ -60,14 +60,10 @@ protected:
     globjects::ref_ptr<gloperate::AdaptiveGrid> m_grid;
     globjects::ref_ptr<gloperate::Icosahedron> m_icosahedron;
     globjects::ref_ptr<globjects::Program> m_program;
-    gl::GLint m_transformLocation;
-	gl::GLint m_timeLocation;
-	gl::GLint m_interpolationLocation;
+   
 	float m_currentTime;
-	float m_oldTime;
-	int m_currentFrame;
-	int m_oldFrame;
-	int m_Offset;
+	
+	//Vertex Animation specifieres
 	int m_firstFrame;
 	int m_lastFrame;
 	int m_fps;

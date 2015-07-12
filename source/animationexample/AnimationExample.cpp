@@ -11,20 +11,27 @@
 #include <globjects/globjects.h>
 #include <globjects/logging.h>
 #include <globjects/DebugMessage.h>
-#include <globjects/Program.h>
+
 
 #include <widgetzeug/make_unique.hpp>
 
 #include <gloperate/base/RenderTargetType.h>
+
+#include <gloperate/resources/ResourceManager.h>
 
 #include <gloperate/painter/TargetFramebufferCapability.h>
 #include <gloperate/painter/ViewportCapability.h>
 #include <gloperate/painter/PerspectiveProjectionCapability.h>
 #include <gloperate/painter/CameraCapability.h>
 #include <gloperate/painter/VirtualTimeCapability.h>
+#include <gloperate-assimp/AssimpMeshLoader.h>
 
 #include <gloperate/primitives/AdaptiveGrid.h>
-#include <gloperate/primitives/Icosahedron.h>
+#include <gloperate/primitives/AbstractDrawable.h>
+#include <gloperate/primitives/PolygonalDrawable.h>
+
+
+#include <ParameterAnimatedObject.h>
 
 
 using namespace gl;
@@ -40,7 +47,6 @@ AnimationExample::AnimationExample(gloperate::ResourceManager & resourceManager)
 ,   m_projectionCapability(addCapability(new gloperate::PerspectiveProjectionCapability(m_viewportCapability)))
 ,   m_cameraCapability(addCapability(new gloperate::CameraCapability()))
 ,	m_timeCapability(addCapability(new gloperate::VirtualTimeCapability()))
-,	m_maxDistance(1)
 {
 	setupPropertyGroup();
 }
@@ -49,16 +55,7 @@ AnimationExample::~AnimationExample() = default;
 
 void AnimationExample::setupPropertyGroup()
 {
-
-	auto property = addProperty<int>("MaximumDistance", this,
-		&AnimationExample::maxDistance,
-		&AnimationExample::setMaxDistance);
-
-	property->setOptions({
-		{ "minimum", 0 },
-		{ "maximum", 255 },
-		{ "step", 1 } });
-	
+	// drop-down menu to switch between Vertex Animations
 	auto vertexAnimationOptions = addProperty<VertexAnimationOptions>("Vertex_Animations", this,
 		&AnimationExample::vertexAnimation,
 		&AnimationExample::setVertexAnimation);
@@ -105,19 +102,7 @@ void AnimationExample::setVertexAnimation(const VertexAnimationOptions & animati
 		m_fps = 1;
 		break;
 	}
-	m_oldFrame = m_firstFrame;
-	m_currentFrame = m_firstFrame + 1;
 	m_currentVertexAnimation = animation;
-}
-
-int AnimationExample::maxDistance() const
-{
-	return m_maxDistance;
-}
-
-void AnimationExample::setMaxDistance(int maxDistance)
-{
-	m_maxDistance = maxDistance;
 }
 
 void AnimationExample::setupProjection()
@@ -147,30 +132,38 @@ void AnimationExample::onInitialize()
     m_grid = new gloperate::AdaptiveGrid{};
     m_grid->setColor({0.6f, 0.6f, 0.6f});
 
-    m_icosahedron = new gloperate::Icosahedron{3};
+	glClearColor(0.85f, 0.87f, 0.91f, 1.0f);
 
-    m_program = new Program{};
-    m_program->attach(
-        Shader::fromFile(GL_VERTEX_SHADER, "data/animationexample/vertexanimation.vert"),
-        Shader::fromFile(GL_FRAGMENT_SHADER, "data/animationexample/vertexanimation.frag")
-    );
-
-    m_transformLocation = m_program->getUniformLocation("transform");
-	m_interpolationLocation = m_program->getUniformLocation("interpol");
-
-    glClearColor(0.85f, 0.87f, 0.91f, 1.0f);
-
-    setupProjection();
+	setupProjection();
 
 	m_cameraCapability->setEye(vec3(100.0, 0.0, 0.0));
+
+   /* gloperate::PolygonalGeometry* buddha = m_resourceManager.load<gloperate::PolygonalGeometry>(std::string("data/animationexample/buddha.obj"));
+
+
+    auto ParObj = new ParameterAnimatedObject(new gloperate::PolygonalDrawable(*buddha));
+
+    m_animation = std::unique_ptr<ParameterAnimatedObject>(ParObj);
+    ParameterKeyframe keyframe;
+    keyframe.time = 0.f;
+    keyframe.translation = glm::vec3{0.f,0.f,0.f};
+    keyframe.rotation = glm::quat();
+    keyframe.scale = glm::vec3(1.f, 1.f, 1.f);
+    m_animation->addKeyframe(keyframe);
+    keyframe.time = 1.f;
+    keyframe.translation = glm::vec3{1.f,0.f,0.f};
+    m_animation->addKeyframe(keyframe);
+    keyframe.time = 4.f;
+    keyframe.translation = glm::vec3{-1.f,0.f,5.f};
+    keyframe.scale = glm::vec3(3.f,1.f,1.f);
+    keyframe.rotation = glm::quat{0.f,0.7f,0.f,0.7f};
+    m_animation->addKeyframe(keyframe);
+	*/
 
 	md2LoaderInstance = md2Loader();
 	md2LoaderInstance.loadModel("data/animationexample/Samourai.md2");
 	md2ModelDrawable = md2LoaderInstance.modelToGPU();
 	m_timeCapability->setLoopDuration(6);
-	m_oldTime = 0;
-	m_Offset = 0;
-	m_interpolationFactor = 0;
 	setVertexAnimation(STAND);
 }
 
@@ -207,32 +200,10 @@ void AnimationExample::onPaint()
 
     m_grid->update(eye, transform);
     m_grid->draw();
-
-    const auto objectTransform = transform * glm::translate(glm::mat4(), glm::vec3(m_maxDistance*0.1f, 0.f, 0.2f) * m_currentTime);
-    m_program->use();
-    m_program->setUniform(m_transformLocation, transform);
-
-	//calculate which frame to draw and how much to interpolate
-	int numFramesAnim = m_lastFrame - m_firstFrame + 1; // the number of frames in the animation
-	float delta = 1.0 / (float)m_fps; // how much time between frames
-	if (m_currentTime < m_oldTime){
-		m_oldTime -= 6; //because I set the Duration to 100. It's ugly, I know.
-	}
-	if (m_currentTime - m_oldTime >= delta){ 
-		m_oldTime = m_currentTime;
-		m_oldFrame = m_currentFrame;
-		m_Offset = (m_Offset + 1) % numFramesAnim; 
-		m_currentFrame = m_firstFrame + m_Offset;
-	}
-
-	m_interpolationFactor = (m_currentTime - m_oldTime) * m_fps;
-	m_program->setUniform(m_interpolationLocation, m_interpolationFactor);
 	
-	md2ModelDrawable.draw(m_oldFrame, m_currentFrame);
-    //m_icosahedron->draw();
-	
+	md2ModelDrawable.draw(m_firstFrame, m_lastFrame, m_fps, m_currentTime, transform);
 
-    m_program->release();
+	//m_animation->draw(m_currentTime, transform);
 
     Framebuffer::unbind(GL_FRAMEBUFFER);
 }
