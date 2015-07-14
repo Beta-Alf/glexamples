@@ -84,10 +84,6 @@ void AnimationExample::setupPropertyGroup()
 	vertexAnimationOptions->setChoices({ STAND, RUN, JUMP, SALUTE });
 }
 
-AnimationTypes AnimationExample::animationType() const{
-	return m_currentAnimationType;
-}
-
 void AnimationExample::initializeParameterAnimation(){
 
 	std::cout << "I started Parameter Animation";
@@ -111,6 +107,10 @@ void AnimationExample::initializeParameterAnimation(){
 	m_animation->addKeyframe(keyframe);
 }
 
+AnimationTypes AnimationExample::animationType() const{
+	return m_currentAnimationType;
+}
+
 void AnimationExample::setAnimationType(const AnimationTypes & type){
 	switch (type) {
 	case ParameterAnimation:
@@ -120,7 +120,6 @@ void AnimationExample::setAnimationType(const AnimationTypes & type){
 		md2LoaderInstance = md2Loader();
 		md2LoaderInstance.loadModel("data/animationexample/Samourai.md2");
 		md2ModelDrawable = md2LoaderInstance.modelToGPU();
-		setVertexAnimation(STAND);
 		break;
 	case RigAnimation:
 		break;
@@ -200,7 +199,8 @@ void AnimationExample::onInitialize()
 
 	m_cameraCapability->setEye(vec3(100.0, 0.0, 0.0));
 
-	setAnimationType(VertexAnimation);
+	setAnimationType(RigAnimation);
+	setVertexAnimation(STAND); // has to be set even if we are in other animations
 
 	m_timeCapability->setLoopDuration(6); 
 }
@@ -241,7 +241,7 @@ void AnimationExample::onPaint()
 	
 	switch (m_currentAnimationType){
 	case ParameterAnimation:
-		//m_animation->draw(m_currentTime, transform);
+		m_animation->draw(m_currentTime, transform);
 		break;
 	case VertexAnimation:
 		md2ModelDrawable.draw(m_firstFrame, m_lastFrame, m_fps, m_currentTime, transform);
