@@ -84,51 +84,13 @@ void AnimationExample::setupPropertyGroup()
 	vertexAnimationOptions->setChoices({ STAND, RUN, JUMP, SALUTE });
 }
 
-void AnimationExample::initializeParameterAnimation(){
-
-	std::cout << "I started Parameter Animation";
-	gloperate::PolygonalGeometry* buddha = m_resourceManager.load<gloperate::PolygonalGeometry>(std::string("data/animationexample/buddha.obj"));
-	auto ParObj = new ParameterAnimatedObject(new gloperate::PolygonalDrawable(*buddha));
-	std::cout << "Buddah is loaded.";
-	m_animation = std::unique_ptr<ParameterAnimatedObject>(ParObj);
-	ParameterKeyframe keyframe;
-	keyframe.time = 0.f;
-	keyframe.translation = glm::vec3{ 0.f, 0.f, 0.f };
-	keyframe.rotation = glm::quat();
-	keyframe.scale = glm::vec3(1.f, 1.f, 1.f);
-	m_animation->addKeyframe(keyframe);
-	keyframe.time = 1.f;
-	keyframe.translation = glm::vec3{ 1.f, 0.f, 0.f };
-	m_animation->addKeyframe(keyframe);
-	keyframe.time = 4.f;
-	keyframe.translation = glm::vec3{ -1.f, 0.f, 5.f };
-	keyframe.scale = glm::vec3(3.f, 1.f, 1.f);
-	keyframe.rotation = glm::quat{ 0.f, 0.7f, 0.f, 0.7f };
-	m_animation->addKeyframe(keyframe);
-}
-
 AnimationTypes AnimationExample::animationType() const{
 	return m_currentAnimationType;
 }
 
 void AnimationExample::setAnimationType(const AnimationTypes & type){
-	switch (type) {
-	case ParameterAnimation:
-		initializeParameterAnimation();
-		break;
-	case VertexAnimation:
-		md2LoaderInstance = md2Loader();
-		md2LoaderInstance.loadModel("data/animationexample/Samourai.md2");
-		md2ModelDrawable = md2LoaderInstance.modelToGPU();
-		break;
-	case RigAnimation:
-		break;
-	default:
-		std::cout << "You have to chose an Animation first.";
-		break;
-	}
-
 	m_currentAnimationType = type;
+	m_initializeNewAnimation = true;
 }
 
 VertexAnimationOptions AnimationExample::vertexAnimation() const{
@@ -157,13 +119,29 @@ void AnimationExample::setVertexAnimation(const VertexAnimationOptions & animati
 		m_lastFrame = 94;
 		m_fps = 7;
 		break;
-	default:
-		m_firstFrame = 0;
-		m_lastFrame = 0;
-		m_fps = 1;
-		break;
 	}
 	m_currentVertexAnimation = animation;
+}
+
+void AnimationExample::initializeParameterAnimation(){
+
+	gloperate::PolygonalGeometry* buddha = m_resourceManager.load<gloperate::PolygonalGeometry>(std::string("data/animationexample/buddha.obj"));
+	auto ParObj = new ParameterAnimatedObject(new gloperate::PolygonalDrawable(*buddha));
+	m_animation = std::unique_ptr<ParameterAnimatedObject>(ParObj);
+	ParameterKeyframe keyframe;
+	keyframe.time = 0.f;
+	keyframe.translation = glm::vec3{ 0.f, 0.f, 0.f };
+	keyframe.rotation = glm::quat();
+	keyframe.scale = glm::vec3(1.f, 1.f, 1.f);
+	m_animation->addKeyframe(keyframe);
+	keyframe.time = 1.f;
+	keyframe.translation = glm::vec3{ 1.f, 0.f, 0.f };
+	m_animation->addKeyframe(keyframe);
+	keyframe.time = 4.f;
+	keyframe.translation = glm::vec3{ -1.f, 0.f, 5.f };
+	keyframe.scale = glm::vec3(3.f, 1.f, 1.f);
+	keyframe.rotation = glm::quat{ 0.f, 0.7f, 0.f, 0.7f };
+	m_animation->addKeyframe(keyframe);
 }
 
 void AnimationExample::setupProjection()
@@ -197,10 +175,9 @@ void AnimationExample::onInitialize()
 
 	setupProjection();
 
-	m_cameraCapability->setEye(vec3(100.0, 0.0, 0.0));
-
-	setAnimationType(RigAnimation);
+	setAnimationType(ParameterAnimation);
 	setVertexAnimation(STAND); // has to be set even if we are in other animations
+	m_initializeNewAnimation = true;
 
 	m_timeCapability->setLoopDuration(6); 
 }
@@ -208,6 +185,23 @@ void AnimationExample::onInitialize()
 void AnimationExample::onPaint()
 {
 	//dependend on displayed animation (switch with menu later)
+	if (m_initializeNewAnimation == true){
+		switch (m_currentAnimationType) {
+		case ParameterAnimation:
+			m_cameraCapability->setEye(vec3(0.0, 0.0, 30.0));
+			initializeParameterAnimation();
+			break;
+		case VertexAnimation:
+			m_cameraCapability->setEye(vec3(100.0, 0.0, 0.0)); // adjust viewpoint to the size of the models 
+			md2LoaderInstance = md2Loader();
+			md2LoaderInstance.loadModel("data/animationexample/Samourai.md2");
+			md2ModelDrawable = md2LoaderInstance.modelToGPU();
+			break;
+		case RigAnimation:
+			break;
+		}
+		m_initializeNewAnimation = false;
+	}
 
 	m_currentTime = m_timeCapability->time();
 

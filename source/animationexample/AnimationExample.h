@@ -59,6 +59,7 @@ protected:
 	std::unique_ptr<ParameterAnimatedObject> m_animation;
 	
 	AnimationTypes m_currentAnimationType;
+	bool m_initializeNewAnimation;
 
 	float m_currentTime;
 	
