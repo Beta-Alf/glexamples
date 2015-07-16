@@ -77,7 +77,7 @@ void AnimationExample::setMaxDistance(int maxDistance)
 
 void AnimationExample::setupProjection()
 {
-    static const auto zNear = 0.3f, zFar = 15.f, fovy = 50.f;
+    static const auto zNear = 0.3f, zFar = 50.f, fovy = 50.f;
 	
     m_projectionCapability->setZNear(zNear);
     m_projectionCapability->setZFar(zFar);
@@ -101,27 +101,24 @@ void AnimationExample::onInitialize()
 
     m_grid = new gloperate::AdaptiveGrid{};
     m_grid->setColor({0.6f, 0.6f, 0.6f});
-    gloperate::PolygonalGeometry* buddha = m_resourceManager.load<gloperate::PolygonalGeometry>(std::string("data/animationexample/buddha.obj"));
+    auto loader = gloperate_assimp::AssimpMeshLoader();
+    auto name = std::string("data/animationexample/boblampclean.md5mesh");
+    auto func = std::function<void(int, int)>();
+    gloperate::PolygonalGeometry* guard = loader.load(name , func) ;
 
 
-    auto ParObj = new ParameterAnimatedObject(new gloperate::PolygonalDrawable(*buddha));
+    //RiggedDrawable aDrawableRig(*guard);
+    auto RigObj = new gloperate::PolygonalDrawable(*guard);
 
-    m_animation = std::unique_ptr<ParameterAnimatedObject>(ParObj);
-    ParameterKeyframe keyframe;
-    keyframe.time = 0.f;
-    keyframe.translation = glm::vec3{0.f,0.f,0.f};
-    keyframe.rotation = glm::quat();
-    keyframe.scale = glm::vec3(1.f, 1.f, 1.f);
-    m_animation->addKeyframe(keyframe);
-    keyframe.time = 1.f;
-    keyframe.translation = glm::vec3{1.f,0.f,0.f};
-    m_animation->addKeyframe(keyframe);
-    keyframe.time = 4.f;
-    keyframe.translation = glm::vec3{-1.f,0.f,5.f};
-    keyframe.scale = glm::vec3(3.f,1.f,1.f);
-    keyframe.rotation = glm::quat{0.f,0.7f,0.f,0.7f};
-    m_animation->addKeyframe(keyframe);
+    m_program = new Program{};
+    m_program->attach(
+        Shader::fromFile(GL_VERTEX_SHADER, "data/animationexample/rigAnim.vert"),
+        Shader::fromFile(GL_FRAGMENT_SHADER, "data/animationexample/rigAnim.frag")
+        );
 
+    m_transformLocation = m_program->getUniformLocation("transform");
+
+    m_animation = std::unique_ptr<gloperate::PolygonalDrawable>(RigObj);
 
     glClearColor(0.85f, 0.87f, 0.91f, 1.0f);
 
@@ -160,7 +157,12 @@ void AnimationExample::onPaint()
     m_grid->update(eye, transform);
     m_grid->draw();
 
-	m_animation->draw(m_timeCapability->time(), transform);
+    m_program->use();
+    m_program->setUniform(m_transformLocation, transform);
+
+    m_animation->draw();//m_timeCapability->time(), transform);
+
+    m_program->release();
 
 
     Framebuffer::unbind(GL_FRAMEBUFFER);

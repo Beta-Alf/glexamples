@@ -8,6 +8,8 @@
 
 #include <gloperate/painter/Painter.h>
 
+//#include <RiggedDrawable.h>
+
 class ParameterAnimatedObject;
 
 namespace globjects
@@ -19,6 +21,7 @@ namespace gloperate
 {
     class AdaptiveGrid;
     class Icosahedron;
+    class PolygonalDrawable;
     class AbstractTargetFramebufferCapability;
     class AbstractViewportCapability;
     class AbstractPerspectiveProjectionCapability;
@@ -49,10 +52,12 @@ protected:
     gloperate::AbstractPerspectiveProjectionCapability * m_projectionCapability;
     gloperate::AbstractCameraCapability * m_cameraCapability;
 	gloperate::AbstractVirtualTimeCapability * m_timeCapability;
+    globjects::ref_ptr<globjects::Program> m_program;
+    gl::GLint m_transformLocation;
 
     /* members */
     globjects::ref_ptr<gloperate::AdaptiveGrid> m_grid;
-	std::unique_ptr<ParameterAnimatedObject> m_animation;
+    std::unique_ptr<gloperate::PolygonalDrawable> m_animation;
 
 private:
 	int m_maxDistance;
