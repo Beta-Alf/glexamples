@@ -104,10 +104,13 @@ bool AnimationExample::timeControlled() const{
 
 void AnimationExample::setTimeControlled(bool controlled){
 	m_timeControlled = controlled;
+	if (controlled){
+		setControlledTime(m_timeCapability->time()); 
+	}
 }
 
 float AnimationExample::getControlledTime() const{
-	return m_controlledTime;
+	return m_controlledTime;	
 }
 
 void AnimationExample::setControlledTime(float newTime){
@@ -210,7 +213,7 @@ void AnimationExample::onInitialize()
 	m_initializeNewAnimation = true;
 
 	m_timeCapability->setLoopDuration(10); 
-	setTimeControlled(false);
+	setTimeControlled(true);
 	setControlledTime(0.0);
 }
 

@@ -23,7 +23,7 @@ public:
 	FrameDrawable() = default;
 	FrameDrawable(const std::vector<gloperate::PolygonalGeometry> &  geometries);
 	~FrameDrawable();
-	void draw(int firstFrame, int lastFrame, int fps, float currentTime, const glm::mat4& transform);
+	void draw(int firstFrame, int lastFrame, int fps, float time, const glm::mat4& transform);
 	virtual void draw();
 
 protected:

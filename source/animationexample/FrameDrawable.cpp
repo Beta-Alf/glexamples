@@ -69,25 +69,28 @@ void FrameDrawable::draw(){
 	std::cout << "You tried to draw a VertexAnimation without parameters. That doesn't work.";
 }
 
-void FrameDrawable::draw(int firstFrame, int lastFrame, int fps, float currentTime, const glm::mat4& transform){
+void FrameDrawable::draw(int firstFrame, int lastFrame, int fps, float time, const glm::mat4& transform){
 	
 	m_program->use();
 	m_program->setUniform(m_transformLocation, transform);
 
 	//calculate which frame to draw and how much to interpolate
-	int numFramesAnim = lastFrame - firstFrame + 1; // the number of frames in the animation
+	int numFramesAnim = lastFrame - firstFrame; // the number of frames in the animation
 	float delta = 1.0 / (float)fps; // how much time between frames
-	if (currentTime < m_oldTime){
-		m_oldTime -= 10; // This enables a smooth animation when the time resets to 0 after 10 seconds
+	
+	float temp = time;
+	int count = 0;
+	m_oldFrame = firstFrame;
+	m_nextFrame = firstFrame;
+	m_interpolationFactor = time;
+	while (temp - delta > 0){
+		m_interpolationFactor -= delta;
+		temp -= delta;
+		count++;
 	}
-	if (currentTime - m_oldTime >= delta){
-		m_oldTime = currentTime;
-		m_oldFrame = m_nextFrame;
-		m_Offset = (m_Offset + 1) % numFramesAnim;
-		m_nextFrame = firstFrame + m_Offset;
-	}
-
-	m_interpolationFactor = (currentTime - m_oldTime) * fps;
+	m_interpolationFactor *= fps; 
+	m_oldFrame += (count % numFramesAnim);
+	m_nextFrame += ((count + 1) % numFramesAnim);
 	m_program->setUniform(m_interpolationLocation, m_interpolationFactor);
 
 
