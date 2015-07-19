@@ -68,6 +68,18 @@ void AnimationExample::setupPropertyGroup()
 
 	animationTypes->setChoices({ ParameterAnimation, VertexAnimation, RigAnimation });
 
+	//time control
+	auto controlTime = addProperty<bool>("control_time", this,
+		&AnimationExample::timeControlled, &AnimationExample::setTimeControlled);
+	
+	auto setTime = addProperty<float>("time", this,
+		&AnimationExample::getControlledTime, &AnimationExample::setControlledTime);
+	
+	setTime->setOptions({
+			{ "minimum", 0.0f },
+			{ "maximum", 10.0f },
+			{ "step", 0.1f }
+	});
 
 	// drop-down menu to switch between Vertex Animations
 	auto vertexAnimationOptions = addProperty<VertexAnimationOptions>("Vertex_Animations", this,
@@ -82,6 +94,24 @@ void AnimationExample::setupPropertyGroup()
 	});
 
 	vertexAnimationOptions->setChoices({ STAND, RUN, JUMP, SALUTE });
+}
+
+
+//getter and setter for the properties
+bool AnimationExample::timeControlled() const{
+	return m_timeControlled;
+}
+
+void AnimationExample::setTimeControlled(bool controlled){
+	m_timeControlled = controlled;
+}
+
+float AnimationExample::getControlledTime() const{
+	return m_controlledTime;
+}
+
+void AnimationExample::setControlledTime(float newTime){
+	m_controlledTime = newTime;
 }
 
 AnimationTypes AnimationExample::animationType() const{
@@ -175,11 +205,13 @@ void AnimationExample::onInitialize()
 
 	setupProjection();
 
-	setAnimationType(ParameterAnimation);
+	setAnimationType(VertexAnimation);
 	setVertexAnimation(STAND); // has to be set even if we are in other animations
 	m_initializeNewAnimation = true;
 
-	m_timeCapability->setLoopDuration(6); 
+	m_timeCapability->setLoopDuration(10); 
+	setTimeControlled(false);
+	setControlledTime(0.0);
 }
 
 void AnimationExample::onPaint()
@@ -203,7 +235,13 @@ void AnimationExample::onPaint()
 		m_initializeNewAnimation = false;
 	}
 
-	m_currentTime = m_timeCapability->time();
+	if (m_timeControlled){
+		m_currentTime = m_controlledTime;
+	}
+	else {
+		m_currentTime = m_timeCapability->time();
+	}
+	
 
     if (m_viewportCapability->hasChanged())
     {

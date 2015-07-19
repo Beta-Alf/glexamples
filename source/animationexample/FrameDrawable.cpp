@@ -78,7 +78,7 @@ void FrameDrawable::draw(int firstFrame, int lastFrame, int fps, float currentTi
 	int numFramesAnim = lastFrame - firstFrame + 1; // the number of frames in the animation
 	float delta = 1.0 / (float)fps; // how much time between frames
 	if (currentTime < m_oldTime){
-		m_oldTime -= 6; //because I set the Duration to 6. This enables a smooth animation when the time resets to 0 after 6 seconds
+		m_oldTime -= 10; // This enables a smooth animation when the time resets to 0 after 10 seconds
 	}
 	if (currentTime - m_oldTime >= delta){
 		m_oldTime = currentTime;

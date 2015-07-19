@@ -62,7 +62,9 @@ protected:
 	bool m_initializeNewAnimation;
 
 	float m_currentTime;
-	
+	bool m_timeControlled;
+	float m_controlledTime;
+
 	//Vertex Animation specifieres
 	int m_firstFrame;
 	int m_lastFrame;
@@ -75,6 +77,12 @@ protected:
 	//Property-functions
 	VertexAnimationOptions vertexAnimation() const;
 	void setVertexAnimation(const VertexAnimationOptions & animation);
+
+	bool timeControlled() const;
+	void setTimeControlled(bool controlled);
+	float getControlledTime() const;
+	void setControlledTime(float newtime);
+
 
 	AnimationTypes animationType() const;
 	void setAnimationType(const AnimationTypes & type);
