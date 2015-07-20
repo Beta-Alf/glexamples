@@ -12,6 +12,7 @@
 #include <globjects/Program.h>
 
 #include <widgetzeug/make_unique.hpp>
+#include <reflectionzeug/variant/Variant.h>
 
 #include <gloperate/base/RenderTargetType.h>
 

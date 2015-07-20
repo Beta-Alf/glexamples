@@ -37,7 +37,7 @@ enum AnimationTypes { ParameterAnimation, VertexAnimation, RigAnimation};
 class AnimationExample : public gloperate::Painter
 {
 public:
-    AnimationExample(gloperate::ResourceManager & resourceManager);
+    AnimationExample(gloperate::ResourceManager & resourceManager, const std::string & relDataPath);
     virtual ~AnimationExample();
 
     void setupProjection();

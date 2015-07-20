@@ -31,11 +31,9 @@ namespace gloperate
 class RigAnimatedObject
 {
 public:
-    RigAnimatedObject(RiggedDrawable *animated);
+    RigAnimatedObject(RiggedDrawable *animated, gloperate::Scene *animations);
     void draw(float time, const glm::mat4& viewProjection);
     std::vector<glm::mat4> interpolate(float t);
-
-    void loadAnimationScene(std::string Filename);
 
 private:
     void interpolateRecursively(const gloperate::BoneNode Bone, float t, std::vector<glm::mat4>& into, glm::mat4 parentTransform, glm::mat4 globalInverse);

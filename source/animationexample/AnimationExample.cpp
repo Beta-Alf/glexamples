@@ -14,6 +14,7 @@
 
 
 #include <widgetzeug/make_unique.hpp>
+#include <reflectionzeug/variant/Variant.hpp>
 
 #include <gloperate/base/RenderTargetType.h>
 
@@ -42,8 +43,8 @@ using namespace globjects;
 
 using widgetzeug::make_unique;
 
-AnimationExample::AnimationExample(gloperate::ResourceManager & resourceManager)
-:   Painter(resourceManager)
+AnimationExample::AnimationExample(gloperate::ResourceManager & resourceManager, const std::string & relDataPath)
+:   Painter("AnimationExample", resourceManager, relDataPath)
 ,   m_targetFramebufferCapability(addCapability(new gloperate::TargetFramebufferCapability()))
 ,   m_viewportCapability(addCapability(new gloperate::ViewportCapability()))
 ,   m_projectionCapability(addCapability(new gloperate::PerspectiveProjectionCapability(m_viewportCapability)))
@@ -244,14 +245,15 @@ void AnimationExample::onPaint()
 
 			m_transformLocation = m_program->getUniformLocation("transform");
 
-			auto loader = gloperate_assimp::AssimpMeshLoader();
-			auto name = std::string("data/animationexample/boblampclean.md5mesh");
-            auto func = std::function<void(int, int)>();
-            auto opt = reflectionzeug::Variant();
-            gloperate::PolygonalGeometry* guard = loader.load(name,opt, func);
-			auto RigObj = new RiggedDrawable(*guard);
-			m_animated = std::unique_ptr<RigAnimatedObject>{new RigAnimatedObject(RigObj)};
-			m_animated->loadAnimationScene("data/animationexample/boblampclean.md5anim");
+            //auto loader = gloperate_assimp::AssimpMeshLoader();
+            auto model = std::string("data/animationexample/boblampclean.md5mesh");
+            auto anim = std::string("data/animationexample/boblampclean.md5anim");
+            //auto func = std::function<void(int, int)>();
+            //auto opt = reflectionzeug::Variant();
+            gloperate::PolygonalGeometry* guard = m_resourceManager.load<gloperate::PolygonalGeometry>(model);
+            auto RigObj = new RiggedDrawable(*guard);
+            gloperate::Scene* scene = m_resourceManager.load<gloperate::Scene>(anim);
+            m_animated = std::unique_ptr<RigAnimatedObject>{new RigAnimatedObject(RigObj, scene)};
 			glClearColor(0.85f, 0.87f, 0.91f, 1.0f);
 			break;
 		}

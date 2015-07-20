@@ -1,6 +1,6 @@
 #include "FrameDrawable.h"
 
-#include <iostream>;
+#include <iostream>
 
 #include <glm/glm.hpp>
 

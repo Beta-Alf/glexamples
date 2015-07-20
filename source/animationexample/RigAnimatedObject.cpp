@@ -19,9 +19,10 @@
 using namespace gl;
 using namespace globjects;
 
-RigAnimatedObject::RigAnimatedObject(RiggedDrawable *animated)
+RigAnimatedObject::RigAnimatedObject(RiggedDrawable *animated, gloperate::Scene *animations)
 {
-    m_animated = std::unique_ptr<RiggedDrawable>(animated);
+    m_animated = std::shared_ptr<RiggedDrawable>(animated);
+    m_animations = std::shared_ptr<gloperate::Scene>(animations);
 
     m_program = new Program{};
     m_program->attach(
@@ -55,14 +56,6 @@ std::vector<glm::mat4> RigAnimatedObject::interpolate(float t)
                            glm::mat4(), glm::mat4()); // calculate the current Bone transforms*/
 
     return boneTransforms;
-}
-
-void RigAnimatedObject::loadAnimationScene(std::string Filename)
-{
-    gloperate_assimp::AssimpSceneLoader Loader;
-
-    m_animations = std::shared_ptr<gloperate::Scene>{Loader.load(Filename, std::function<void(int,int)>())};
-
 }
 
 void RigAnimatedObject::interpolateRecursively(const BoneNode Bone,

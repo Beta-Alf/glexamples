@@ -6,10 +6,10 @@
 
 GLOPERATE_PLUGIN_LIBRARY
 
-    GLOPERATE_PLUGIN(AnimationExample
+    GLOPERATE_PAINTER_PLUGIN(AnimationExample
     , "AnimationExample"
     , "An Example demonstrating different ways of animation"
-    , "Juliane Waack and Florian Wagner"
+    , GLEXAMPLES_AUTHOR_ORGANIZATION
     , "v1.0.0" )
 
 GLOPERATE_PLUGIN_LIBRARY_END
