@@ -38,7 +38,7 @@ public:
     void loadAnimationScene(std::string Filename);
 
 private:
-    //void interpolateRecursively(const BoneNode &First, const BoneNode &Second, float normPos, std::vector<glm::mat4>& into, glm::mat4 parentTransform);
+    void interpolateRecursively(const gloperate::BoneNode Bone, float t, std::vector<glm::mat4>& into, glm::mat4 parentTransform);
 
     int numBones;
     globjects::ref_ptr<globjects::Program> m_program;
