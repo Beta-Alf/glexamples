@@ -96,11 +96,14 @@ void ParameterAnimatedObject::draw(float time, const glm::mat4& viewProjection)
 
 glm::mat4 ParameterAnimatedObject::interpolate(Frame First, Frame Second, float time)
 {
-    float dist = Second.time - First.time;
-    float pos = time - First.time; // The distance to the first frame
-    float normPos = pos/dist;	// Normalized position between 0 an 1
-    normPos = normPos < 0 ? 0 : normPos;
-    normPos = normPos > 1 ? 1 : normPos;
+	float normPos = 0.0;
+	if (First.time != Second.time){
+		float dist = Second.time - First.time;
+		float pos = time - First.time; // The distance to the first frame
+		normPos = pos / dist;	// Normalized position between 0 an 1
+		normPos = normPos < 0 ? 0 : normPos;
+		normPos = normPos > 1 ? 1 : normPos;
+	}
     glm::vec3 translation = glm::mix(First.translation, Second.translation, normPos);
     glm::quat rotation = glm::mix(First.rotation, Second.rotation, normPos);
     glm::vec3 scale = glm::mix(First.scale, Second.scale, normPos);

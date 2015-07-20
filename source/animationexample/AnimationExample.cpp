@@ -170,7 +170,7 @@ void AnimationExample::initializeParameterAnimation(){
 	keyframe.time = 1.f;
 	keyframe.translation = glm::vec3{ 1.f, 0.f, 0.f };
 	m_animation->addKeyframe(keyframe);
-	keyframe.time = 4.f;
+	keyframe.time = 10.f;
 	keyframe.translation = glm::vec3{ -1.f, 0.f, 5.f };
 	keyframe.scale = glm::vec3(3.f, 1.f, 1.f);
 	keyframe.rotation = glm::quat{ 0.f, 0.7f, 0.f, 0.7f };
@@ -213,7 +213,7 @@ void AnimationExample::onInitialize()
 	m_initializeNewAnimation = true;
 
 	m_timeCapability->setLoopDuration(10); 
-	setTimeControlled(true);
+	setTimeControlled(false);
 	setControlledTime(0.0);
 }
 
