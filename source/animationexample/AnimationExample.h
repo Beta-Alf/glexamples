@@ -8,8 +8,7 @@
 
 #include <gloperate/painter/Painter.h>
 
-//#include <RiggedDrawable.h>
-
+class RigAnimatedObject;
 class ParameterAnimatedObject;
 
 namespace globjects
@@ -57,7 +56,8 @@ protected:
 
     /* members */
     globjects::ref_ptr<gloperate::AdaptiveGrid> m_grid;
-    std::unique_ptr<gloperate::PolygonalDrawable> m_animation;
+    std::unique_ptr<RigAnimatedObject> m_animated;
+
 
 private:
 	int m_maxDistance;

@@ -30,6 +30,7 @@
 
 
 #include <ParameterAnimatedObject.h>
+#include <RigAnimatedObject.h>
 #include <RiggedDrawable.h>
 
 
@@ -119,7 +120,7 @@ void AnimationExample::onInitialize()
 
     m_transformLocation = m_program->getUniformLocation("transform");
 
-    m_animation = std::unique_ptr<gloperate::PolygonalDrawable>(RigObj);
+    m_animated = std::unique_ptr<RigAnimatedObject>{new RigAnimatedObject(RigObj)};
 
     glClearColor(0.85f, 0.87f, 0.91f, 1.0f);
 
@@ -161,7 +162,7 @@ void AnimationExample::onPaint()
     m_program->use();
     m_program->setUniform(m_transformLocation, transform);
 
-    m_animation->draw();//m_timeCapability->time(), transform);
+    m_animated->draw(m_timeCapability->time(), transform);//m_timeCapability->time(), transform);
 
     m_program->release();
 

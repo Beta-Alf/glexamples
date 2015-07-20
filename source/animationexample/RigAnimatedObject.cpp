@@ -12,6 +12,8 @@
 #include <gloperate/primitives/AbstractDrawable.h>
 #include <gloperate/primitives/PolygonalDrawable.h>
 
+#include <gloperate-assimp/AssimpSceneLoader.h>
+
 #include <RiggedDrawable.h>
 
 using namespace gl;
@@ -23,8 +25,8 @@ RigAnimatedObject::RigAnimatedObject(RiggedDrawable *animated)
 
     m_program = new Program{};
     m_program->attach(
-        Shader::fromFile(GL_VERTEX_SHADER, "data/animationexample/paramAnim.vert"),
-        Shader::fromFile(GL_FRAGMENT_SHADER, "data/animationexample/icosahedron.frag"));
+        Shader::fromFile(GL_VERTEX_SHADER, "data/animationexample/rigAnim.vert"),
+        Shader::fromFile(GL_FRAGMENT_SHADER, "data/animationexample/rigAnim.frag"));
 
     m_transformLocation = m_program->getUniformLocation("transform");
     m_frameLocation = m_program->getUniformLocation("bones");
@@ -64,7 +66,13 @@ std::vector<glm::mat4> RigAnimatedObject::interpolate(float t)
     return std::vector<glm::mat4>();
 }
 
-void RigAnimatedObject::loadAnimationScene(std::string Filename) {Filename = Filename;}
+void RigAnimatedObject::loadAnimationScene(std::string Filename)
+{
+    gloperate_assimp::AssimpSceneLoader Loader;
+
+    m_animations = std::shared_ptr<gloperate::Scene>{Loader.load(Filename, std::function<void(int,int)>())};
+
+}
 
 // pass in the transform so far
 /*
