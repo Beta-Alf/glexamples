@@ -121,7 +121,7 @@ void AnimationExample::onInitialize()
     m_transformLocation = m_program->getUniformLocation("transform");
 
     m_animated = std::unique_ptr<RigAnimatedObject>{new RigAnimatedObject(RigObj)};
-
+    m_animated->loadAnimationScene("data/animationexample/boblampclean.md5anim");
     glClearColor(0.85f, 0.87f, 0.91f, 1.0f);
 
     setupProjection();

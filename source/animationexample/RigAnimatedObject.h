@@ -3,6 +3,7 @@
 #include <glbinding/gl/types.h>
 
 #include <globjects/base/ref_ptr.h>
+#include <globjects/Uniform.h>
 
 #include <gloperate/primitives/Scene.h>
 #include <glm/common.hpp>
@@ -43,6 +44,7 @@ private:
     globjects::ref_ptr<globjects::Program> m_program;
     std::shared_ptr<RiggedDrawable> m_animated;
     std::shared_ptr<gloperate::Scene> m_animations;
+    globjects::ref_ptr<globjects::Uniform<std::vector<glm::mat4>>> m_bonesUniform;
     gl::GLint m_transformLocation;
     gl::GLint m_frameLocation;
     gl::GLint m_boneIDLocation;

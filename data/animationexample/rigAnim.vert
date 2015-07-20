@@ -13,11 +13,12 @@ out vec4 weights;
 const int MAX_BONES = 100;
 
 uniform mat4 transform;
-uniform mat4 gBones[MAX_BONES];
+uniform mat4 bones[MAX_BONES];
+uniform vec4 test[MAX_BONES];
 
 void main()
 {
-	gl_Position = transform * vec4(a_vertex, 1.0);
+	gl_Position = bones[0] * transform * vec4(a_vertex, 1.0);
     v_normal = a_normal;
 
 	weights = bone_weights;

@@ -29,20 +29,17 @@ RigAnimatedObject::RigAnimatedObject(RiggedDrawable *animated)
         Shader::fromFile(GL_FRAGMENT_SHADER, "data/animationexample/rigAnim.frag"));
 
     m_transformLocation = m_program->getUniformLocation("transform");
-    m_frameLocation = m_program->getUniformLocation("bones");
+    m_bonesUniform = new globjects::Uniform<std::vector<glm::mat4>>{"bones"};
+    m_program->addUniform(m_bonesUniform);
 }
 
 void RigAnimatedObject::draw(float time, const glm::mat4 &viewProjection)
 {
-    time = time;
-    std::vector<glm::mat4> current;
-
-    while (glGetError() != GL_NO_ERROR)
-        ;
+    std::vector<glm::mat4> current = interpolate(time);
 
     m_program->use();
     m_program->setUniform(m_transformLocation, viewProjection);
-    m_program->setUniform(m_frameLocation, current);
+    m_bonesUniform->set(current);
 
     m_animated->draw();
 
@@ -51,19 +48,19 @@ void RigAnimatedObject::draw(float time, const glm::mat4 &viewProjection)
 
 std::vector<glm::mat4> RigAnimatedObject::interpolate(float t)
 {
-    t = t;
-    /*float dist = second.time - first.time;
+    t=t;
+    std::vector<glm::mat4> boneTransforms{m_animated->m_bindTransforms.size()};
+    /*
+    float dist = second.time - first.time;
     float pos = t - first.time; // The distance to the first frame
     float normPos = pos / dist; // Normalized position between 0 an 1
     normPos = normPos < 0 ? 0 : normPos;
     normPos = normPos > 1 ? 1 : normPos;
 
-    std::vector<glm::mat4> boneTransforms{m_animated->m_bindTransforms.size()};
     interpolateRecursively(first.root, second.root, normPos, boneTransforms,
                            glm::mat4()); // calculate the current Bone transforms
-
-    return boneTransforms;*/
-    return std::vector<glm::mat4>();
+    */
+    return boneTransforms;
 }
 
 void RigAnimatedObject::loadAnimationScene(std::string Filename)
