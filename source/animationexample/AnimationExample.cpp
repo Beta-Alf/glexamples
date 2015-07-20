@@ -22,7 +22,7 @@
 #include <gloperate/painter/PerspectiveProjectionCapability.h>
 #include <gloperate/painter/CameraCapability.h>
 #include <gloperate/painter/VirtualTimeCapability.h>
-#include <gloperate-assimp/AssimpMeshLoader.h>
+#include <gloperate-assimp/AssimpSceneLoader.h>
 
 #include <gloperate/primitives/AdaptiveGrid.h>
 #include <gloperate/primitives/AbstractDrawable.h>
@@ -114,10 +114,11 @@ void AnimationExample::onInitialize()
 
     m_transformLocation = m_program->getUniformLocation("transform");
 
-    auto loader = gloperate_assimp::AssimpMeshLoader();
+    auto loader = gloperate_assimp::AssimpSceneLoader();
     auto name = std::string("data/animationexample/boblampclean.md5mesh");
     auto func = std::function<void(int, int)>();
-    gloperate::PolygonalGeometry* guard = loader.load(name , func) ;
+    auto Scene = loader.load(name, func);
+    gloperate::PolygonalGeometry* guard = Scene->meshes()[1];
     auto RigObj = new RiggedDrawable(*guard);
     m_animated = std::unique_ptr<RigAnimatedObject>{new RigAnimatedObject(RigObj)};
     m_animated->loadAnimationScene("data/animationexample/boblampclean.md5anim");

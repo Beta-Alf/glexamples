@@ -50,9 +50,9 @@ void RigAnimatedObject::draw(float time, const glm::mat4 &viewProjection)
 std::vector<glm::mat4> RigAnimatedObject::interpolate(float t)
 {
     std::vector<glm::mat4> boneTransforms{m_animated->m_bindTransforms.size()};
-
-    interpolateRecursively(*(m_animations->boneHierarchy()), t, boneTransforms,
-                           glm::mat4(), glm::mat4()); // calculate the current Bone transforms*/
+    t=t;
+    //interpolateRecursively(*(m_animations->boneHierarchy()), t, boneTransforms,
+    //                       glm::mat4(), glm::mat4()); // calculate the current Bone transforms*/
 
     return boneTransforms;
 }
