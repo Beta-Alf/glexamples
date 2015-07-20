@@ -69,7 +69,7 @@ public:
 
 	std::vector<gloperate::PolygonalGeometry> Frames;
 
-	void loadModel(char* filename);
+    void loadModel(const char* filename);
 	FrameDrawable modelToGPU();
 
 	gloperate::PolygonalGeometry createFrame(int number);

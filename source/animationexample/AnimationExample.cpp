@@ -71,8 +71,8 @@ void AnimationExample::setupPropertyGroup()
 	animationTypes->setChoices({ ParameterAnimation, VertexAnimation, RigAnimation });
 
 	//time control
-	auto controlTime = addProperty<bool>("control_time", this,
-		&AnimationExample::timeControlled, &AnimationExample::setTimeControlled);
+//	auto controlTime = addProperty<bool>("control_time", this,
+//		&AnimationExample::timeControlled, &AnimationExample::setTimeControlled);
 	
 	auto setTime = addProperty<float>("time", this,
 		&AnimationExample::getControlledTime, &AnimationExample::setControlledTime);
@@ -232,7 +232,7 @@ void AnimationExample::onPaint()
 		case VertexAnimation:
 			m_cameraCapability->setEye(vec3(100.0, 0.0, 0.0)); // adjust viewpoint to the size of the models 
 			md2LoaderInstance = md2Loader();
-			md2LoaderInstance.loadModel("data/animationexample/Samourai.md2");
+            md2LoaderInstance.loadModel("data/animationexample/Samourai.md2");
 			md2ModelDrawable = md2LoaderInstance.modelToGPU();
 			break;
 		case RigAnimation:
@@ -246,8 +246,9 @@ void AnimationExample::onPaint()
 
 			auto loader = gloperate_assimp::AssimpMeshLoader();
 			auto name = std::string("data/animationexample/boblampclean.md5mesh");
-			auto func = std::function<void(int, int)>();
-			gloperate::PolygonalGeometry* guard = loader.load(name, func);
+            auto func = std::function<void(int, int)>();
+            auto opt = reflectionzeug::Variant();
+            gloperate::PolygonalGeometry* guard = loader.load(name,opt, func);
 			auto RigObj = new RiggedDrawable(*guard);
 			m_animated = std::unique_ptr<RigAnimatedObject>{new RigAnimatedObject(RigObj)};
 			m_animated->loadAnimationScene("data/animationexample/boblampclean.md5anim");

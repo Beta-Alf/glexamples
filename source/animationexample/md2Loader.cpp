@@ -181,7 +181,7 @@ typedef VertexKeyframe Frame;
 		}
 	}
 
-void md2Loader::loadModel(char* filename){
+void md2Loader::loadModel(const char* filename){
 	model = fopen(filename, "rb");
 	fread(&header, sizeof(md2_header), 1, model); // Read header where all info about model is stored
 
