@@ -79,7 +79,7 @@ void AnimationExample::setMaxDistance(int maxDistance)
 
 void AnimationExample::setupProjection()
 {
-    static const auto zNear = 0.3f, zFar = 50.f, fovy = 50.f;
+    static const auto zNear = 0.3f, zFar = 200.f, fovy = 50.f;
 	
     m_projectionCapability->setZNear(zNear);
     m_projectionCapability->setZFar(zFar);

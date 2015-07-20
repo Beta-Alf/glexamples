@@ -14,12 +14,16 @@ const int MAX_BONES = 100;
 
 uniform mat4 transform;
 uniform mat4 bones[MAX_BONES];
-uniform vec4 test[MAX_BONES];
 
 void main()
 {
-	gl_Position = bones[0] * transform * vec4(a_vertex, 1.0);
-    v_normal = a_normal;
 
+	mat4 boneTransform = bones[bone_indices[0]] * bone_weights[0];
+    boneTransform += bones[bone_indices[1]] * bone_weights[1];
+    boneTransform += bones[bone_indices[2]] * bone_weights[2];
+    boneTransform += bones[bone_indices[3]] * bone_weights[3];
+
+    gl_Position = transform * boneTransform * vec4(a_vertex, 1.0);
+    v_normal = a_normal;
 	weights = bone_weights;
 }
