@@ -17,11 +17,6 @@
 #include <globjects/Program.h>
 
 FrameDrawable::FrameDrawable(const std::vector<gloperate::PolygonalGeometry> & geometries)
-	: m_interpolationFactor(0)
-	, m_nextFrame(0)
-	, m_Offset(0)
-	, m_oldFrame(0)
-	, m_oldTime(0)
 {	
 	// Save number of elements in index buffer
 	m_size = static_cast<gl::GLsizei>(geometries[0].indices().size());
@@ -66,7 +61,7 @@ FrameDrawable::~FrameDrawable()
 }
 
 void FrameDrawable::draw(){
-	std::cout << "You tried to draw a VertexAnimation without parameters. That doesn't work.";
+	assert(false); // you cannot draw the object without the transformation matrix
 }
 
 void FrameDrawable::draw(int firstFrame, int lastFrame, int fps, float time, const glm::mat4& transform){
@@ -74,25 +69,16 @@ void FrameDrawable::draw(int firstFrame, int lastFrame, int fps, float time, con
 	m_program->use();
 	m_program->setUniform(m_transformLocation, transform);
 
-	//calculate which frame to draw and how much to interpolate
-	int numFramesAnim = lastFrame - firstFrame; // the number of frames in the animation
-	float delta = 1.0 / (float)fps; // how much time between frames
+	// calculate which frame to draw and how much to interpolate
+	int numFramesAnim = lastFrame - firstFrame + 1; // number of frames in the animation	
+	float temp = time * fps;
+	int offset = floor(temp);
+	float interpolationFactor = temp - (int)temp;
 	
-	float temp = time;
-	int count = 0;
-	m_oldFrame = firstFrame;
-	m_nextFrame = firstFrame;
-	m_interpolationFactor = time;
-	while (temp - delta > 0){
-		m_interpolationFactor -= delta;
-		temp -= delta;
-		count++;
-	}
-	m_interpolationFactor *= fps; 
-	m_oldFrame += (count % numFramesAnim);
-	m_nextFrame += ((count + 1) % numFramesAnim);
-	m_program->setUniform(m_interpolationLocation, m_interpolationFactor);
+	int currentFrame = firstFrame + (offset % numFramesAnim);
+	int nextFrame = firstFrame + ((offset + 1) % numFramesAnim);
 
+	m_program->setUniform(m_interpolationLocation, interpolationFactor);
 
 	// Create vertex array object
 	m_vao = new globjects::VertexArray;
@@ -104,7 +90,7 @@ void FrameDrawable::draw(int firstFrame, int lastFrame, int fps, float time, con
 	//bind frame1
 	auto vertexBinding = m_vao->binding(0);
 	vertexBinding->setAttribute(0);
-	vertexBinding->setBuffer(m_frame_vertices[m_oldFrame], 0, sizeof(glm::vec3));
+	vertexBinding->setBuffer(m_frame_vertices[currentFrame], 0, sizeof(glm::vec3));
 	vertexBinding->setFormat(3, gl::GL_FLOAT);
 	m_vao->enable(0);
 
@@ -112,7 +98,7 @@ void FrameDrawable::draw(int firstFrame, int lastFrame, int fps, float time, con
 	{
 		vertexBinding = m_vao->binding(1);
 		vertexBinding->setAttribute(1);
-		vertexBinding->setBuffer(m_frame_normals[m_oldFrame], 0, sizeof(glm::vec3));
+		vertexBinding->setBuffer(m_frame_normals[currentFrame], 0, sizeof(glm::vec3));
 		vertexBinding->setFormat(3, gl::GL_FLOAT, gl::GL_TRUE);
 		m_vao->enable(1);
 	}
@@ -120,7 +106,7 @@ void FrameDrawable::draw(int firstFrame, int lastFrame, int fps, float time, con
 	//bind frame2
 	vertexBinding = m_vao->binding(2);
 	vertexBinding->setAttribute(2);
-	vertexBinding->setBuffer(m_frame_vertices[m_nextFrame], 0, sizeof(glm::vec3));
+	vertexBinding->setBuffer(m_frame_vertices[nextFrame], 0, sizeof(glm::vec3));
 	vertexBinding->setFormat(3, gl::GL_FLOAT);
 	m_vao->enable(2);
 
@@ -128,7 +114,7 @@ void FrameDrawable::draw(int firstFrame, int lastFrame, int fps, float time, con
 	{
 		vertexBinding = m_vao->binding(3);
 		vertexBinding->setAttribute(3);
-		vertexBinding->setBuffer(m_frame_normals[m_nextFrame], 0, sizeof(glm::vec3));
+		vertexBinding->setBuffer(m_frame_normals[nextFrame], 0, sizeof(glm::vec3));
 		vertexBinding->setFormat(3, gl::GL_FLOAT, gl::GL_TRUE);
 		m_vao->enable(3);
 	}
