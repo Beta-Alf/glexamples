@@ -1,4 +1,3 @@
-#include <iostream>
 #include "ParameterAnimatedObject.h"
 #include <algorithm>
 
@@ -86,12 +85,6 @@ void ParameterAnimatedObject::draw(float time, const glm::mat4& viewProjection)
     m_animated->draw();
 
     m_program->release();
-
-    while(auto a = glGetError() != GL_NO_ERROR)
-    {
-        std::cout << "Error detected" << std::endl;
-        std::cout << a << std::endl;
-    }
 }
 
 glm::mat4 ParameterAnimatedObject::interpolate(Frame First, Frame Second, float time)

@@ -12,6 +12,8 @@
 
 #include <FrameDrawable.h>
 
+class RigAnimatedObject;
+
 class ParameterAnimatedObject;
 
 namespace globjects
@@ -53,10 +55,14 @@ protected:
     gloperate::AbstractPerspectiveProjectionCapability * m_projectionCapability;
     gloperate::AbstractCameraCapability * m_cameraCapability;
 	gloperate::AbstractVirtualTimeCapability * m_timeCapability;
+    globjects::ref_ptr<globjects::Program> m_program;
+    gl::GLint m_transformLocation;
 
     /* members */
     globjects::ref_ptr<gloperate::AdaptiveGrid> m_grid;
+
 	std::unique_ptr<ParameterAnimatedObject> m_animation;
+	std::unique_ptr<RigAnimatedObject> m_animated;
 	
 	AnimationTypes m_currentAnimationType;
 	bool m_initializeNewAnimation;
@@ -86,6 +92,7 @@ protected:
 
 	AnimationTypes animationType() const;
 	void setAnimationType(const AnimationTypes & type);
+
 
 private:
 	int m_maxDistance;

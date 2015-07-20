@@ -32,6 +32,8 @@
 
 
 #include <ParameterAnimatedObject.h>
+#include <RigAnimatedObject.h>
+#include <RiggedDrawable.h>
 
 
 using namespace gl;
@@ -179,7 +181,7 @@ void AnimationExample::initializeParameterAnimation(){
 
 void AnimationExample::setupProjection()
 {
-    static const auto zNear = 0.1f, zFar = 150.f, fovy = 50.f;
+    static const auto zNear = 0.3f, zFar = 200.f, fovy = 50.f;
 	
     m_projectionCapability->setZNear(zNear);
     m_projectionCapability->setZFar(zFar);
@@ -203,6 +205,7 @@ void AnimationExample::onInitialize()
 
     m_grid = new gloperate::AdaptiveGrid{};
     m_grid->setColor({0.6f, 0.6f, 0.6f});
+
 
 	glClearColor(0.85f, 0.87f, 0.91f, 1.0f);
 
@@ -233,6 +236,22 @@ void AnimationExample::onPaint()
 			md2ModelDrawable = md2LoaderInstance.modelToGPU();
 			break;
 		case RigAnimation:
+			m_program = new Program{};
+			m_program->attach(
+				Shader::fromFile(GL_VERTEX_SHADER, "data/animationexample/rigAnim.vert"),
+				Shader::fromFile(GL_FRAGMENT_SHADER, "data/animationexample/rigAnim.frag")
+				);
+
+			m_transformLocation = m_program->getUniformLocation("transform");
+
+			auto loader = gloperate_assimp::AssimpMeshLoader();
+			auto name = std::string("data/animationexample/boblampclean.md5mesh");
+			auto func = std::function<void(int, int)>();
+			gloperate::PolygonalGeometry* guard = loader.load(name, func);
+			auto RigObj = new RiggedDrawable(*guard);
+			m_animated = std::unique_ptr<RigAnimatedObject>{new RigAnimatedObject(RigObj)};
+			m_animated->loadAnimationScene("data/animationexample/boblampclean.md5anim");
+			glClearColor(0.85f, 0.87f, 0.91f, 1.0f);
 			break;
 		}
 		m_initializeNewAnimation = false;
@@ -282,10 +301,14 @@ void AnimationExample::onPaint()
 		md2ModelDrawable.draw(m_firstFrame, m_lastFrame, m_fps, m_currentTime, transform);
 		break;
 	case RigAnimation:
+		m_program->use();
+		m_program->setUniform(m_transformLocation, transform);
+
+		m_animated->draw(m_timeCapability->time(), transform);//m_timeCapability->time(), transform);
+
+		m_program->release();
 		break;
 	}
 	
-
-
     Framebuffer::unbind(GL_FRAMEBUFFER);
 }

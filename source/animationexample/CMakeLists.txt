@@ -38,6 +38,8 @@ set(source_path "${CMAKE_CURRENT_SOURCE_DIR}/")
 set(sources
     ${source_path}/AnimationExample.cpp
 	${source_path}/ParameterAnimatedObject.cpp
+	${source_path}/RigAnimatedObject.cpp
+	${source_path}/RiggedDrawable.cpp
     ${source_path}/plugin.cpp
     ${source_path}/md2Loader.cpp
     ${source_path}/FrameDrawable.cpp
@@ -49,6 +51,8 @@ set(api_includes
     ${include_path}/md2Loader.h
     ${include_path}/FrameDrawable.h
     ${include_path}/anorms.h
+	${include_path}/RigAnimatedObject.h
+	${include_path}/RiggedDrawable.h
 )
 
 # Group source files
