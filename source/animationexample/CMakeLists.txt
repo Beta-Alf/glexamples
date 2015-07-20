@@ -39,7 +39,7 @@ set(sources
     ${source_path}/AnimationExample.cpp
 	${source_path}/ParameterAnimatedObject.cpp
 	${source_path}/RigAnimatedObject.cpp
-	#${source_path}/RiggedDrawable.cpp
+	${source_path}/RiggedDrawable.cpp
     ${source_path}/plugin.cpp
 
 )
@@ -48,7 +48,7 @@ set(api_includes
     ${include_path}/AnimationExample.h
 	${include_path}/ParameterAnimatedObject.h
 	${include_path}/RigAnimatedObject.h
-	#${include_path}/RiggedDrawable.h
+	${include_path}/RiggedDrawable.h
 )
 
 # Group source files

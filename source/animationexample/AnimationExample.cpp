@@ -30,6 +30,7 @@
 
 
 #include <ParameterAnimatedObject.h>
+#include <RiggedDrawable.h>
 
 
 using namespace gl;
@@ -108,7 +109,7 @@ void AnimationExample::onInitialize()
 
 
     //RiggedDrawable aDrawableRig(*guard);
-    auto RigObj = new gloperate::PolygonalDrawable(*guard);
+    auto RigObj = new RiggedDrawable(*guard);
 
     m_program = new Program{};
     m_program->attach(

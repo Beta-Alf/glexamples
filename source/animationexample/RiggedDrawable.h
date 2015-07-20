@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <map>
 #include <glm/glm.hpp>
 
 #include <globjects/base/ref_ptr.h>
@@ -32,7 +33,7 @@ public:
     *  @brief
     *    Destructor
     */
-    virtual ~RiggedDrawable();
+    virtual ~RiggedDrawable() = default;
 
     /**
     *  @brief
@@ -44,7 +45,7 @@ public:
     //virtual void draw() override;
 
 
-    std::vector<std::string>                   m_boneMapping;         /**< Mapping from string to boneIndex > */
+    std::map<std::string,size_t>                   m_boneMapping;         /**< Mapping from string to boneIndex > */
     std::vector<glm::mat4>                     m_bindTransforms;      /**< bind Matrices per bone> */
 
 protected:
