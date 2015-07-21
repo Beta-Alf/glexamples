@@ -36,7 +36,7 @@ public:
     std::vector<glm::mat4> interpolate(float t);
 
 private:
-    void interpolateRecursively(const gloperate::BoneNode Bone, float t, std::vector<glm::mat4>& into, glm::mat4 parentTransform, glm::mat4 globalInverse);
+    void interpolateRecursively(const gloperate::BoneNode& Bone, float t, std::vector<glm::mat4>& into, glm::mat4 parentTransform);
 
     int numBones;
     globjects::ref_ptr<globjects::Program> m_program;

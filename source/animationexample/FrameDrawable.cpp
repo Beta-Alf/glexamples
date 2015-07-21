@@ -70,10 +70,10 @@ void FrameDrawable::draw(int firstFrame, int lastFrame, int fps, float time, con
 	m_program->setUniform(m_transformLocation, transform);
 
 	// calculate which frame to draw and how much to interpolate
-	int numFramesAnim = lastFrame - firstFrame + 1; // number of frames in the animation	
+    int numFramesAnim = lastFrame - firstFrame + 1;
 	float temp = time * fps;
 	int offset = floor(temp);
-	float interpolationFactor = temp - (int)temp;
+    float interpolationFactor = temp - static_cast<int>(temp);
 	
 	int currentFrame = firstFrame + (offset % numFramesAnim);
 	int nextFrame = firstFrame + ((offset + 1) % numFramesAnim);

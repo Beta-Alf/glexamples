@@ -36,11 +36,18 @@ RigAnimatedObject::RigAnimatedObject(RiggedDrawable *animated, gloperate::Scene 
 
 void RigAnimatedObject::draw(float time, const glm::mat4 &viewProjection)
 {
+
     std::vector<glm::mat4> current = interpolate(time);
 
+    glm::quat rotation;
+    rotation = glm::rotate(rotation, static_cast<float>(M_PI)*0.5f,glm::vec3{0.0,0.0,1.0});
+    rotation = glm::rotate(rotation, static_cast<float>(M_PI)*0.5f,glm::vec3{0.0,1.0,0.0});
+    auto rotated = glm::mat4_cast(rotation);
+    rotated = glm::translate(rotated, glm::vec3{0,9,-25});
 
     m_program->use();
-    m_program->setUniform(m_transformLocation, viewProjection);
+    m_program->setUniform(m_transformLocation,  viewProjection * rotated);
+
     m_bonesUniform->set(current);
 
     m_animated->draw();
@@ -53,24 +60,23 @@ std::vector<glm::mat4> RigAnimatedObject::interpolate(float t)
     std::vector<glm::mat4> boneTransforms{m_animated->m_bindTransforms.size()};
 
     interpolateRecursively(*(m_animations->boneHierarchy()), t, boneTransforms,
-                           glm::mat4(), glm::mat4()); // calculate the current Bone transforms*/
+                           glm::mat4());
 
     return boneTransforms;
 }
 
-void RigAnimatedObject::interpolateRecursively(const BoneNode Bone,
+void RigAnimatedObject::interpolateRecursively(const BoneNode& Bone,
                                                float t,
                                                std::vector<glm::mat4> &into,
-                                               glm::mat4 parentTransform,
-                                               glm::mat4 globalInverse)
+                                               glm::mat4 parentTransform)
+
 {
 
     //Find the correct Channel (we are only using the first animation of the scene)
     //Of course sometimes the model and the animation have different views about the start of the hierarchy
     if(Bone.boneName == "<MD5_Hierarchy>")
     {
-        globalInverse = glm::inverse(Bone.bindTransform);
-        interpolateRecursively(Bone.children[0],t,into,parentTransform,globalInverse);
+        interpolateRecursively(Bone.children[0],t,into,parentTransform);
         return;
     }
     gloperate::RigAnimationTrack* Animation = m_animations->animations()[0];
@@ -149,14 +155,13 @@ void RigAnimatedObject::interpolateRecursively(const BoneNode Bone,
             rotation = BoneChannel->rotation[0].rotation;
          }
     }
-    //glm::vec3 scale = glm::mix(First.scale, Second.scale, normPos);
+
     glm::mat4 transform;
     transform = glm::translate(transform, translation);
-    //transform = glm::scale(transform, scale);
+    transform = glm::scale(transform, scale);
     transform = transform * glm::mat4_cast(rotation);
     transform = parentTransform * transform;
 
-    //Check whether this is a real bone or only a helper node/not instantiated appendage
     if(m_animated->m_boneMapping.count(BoneChannel->boneName) == 1)
     {
         auto boneIndex = m_animated->m_boneMapping.at(BoneChannel->boneName);
@@ -165,6 +170,6 @@ void RigAnimatedObject::interpolateRecursively(const BoneNode Bone,
 
     for (auto& child : Bone.children) {
 
-        interpolateRecursively(child, t, into, transform, globalInverse);
+        interpolateRecursively(child, t, into, transform);
     }
 }

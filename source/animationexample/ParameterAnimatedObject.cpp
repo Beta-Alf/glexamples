@@ -51,6 +51,7 @@ void ParameterAnimatedObject::addKeyframe(ParameterKeyframe Keyframe)
 
 void ParameterAnimatedObject::draw(float time, const glm::mat4& viewProjection)
 {
+
     glm::mat4 model;
 
     if(!m_keyframes.empty())
@@ -74,9 +75,9 @@ void ParameterAnimatedObject::draw(float time, const glm::mat4& viewProjection)
                 break;
             }
         }
-
         model = interpolate(before, after, time);
     }
+
     while(glGetError() != GL_NO_ERROR);
 
 	m_program->use();

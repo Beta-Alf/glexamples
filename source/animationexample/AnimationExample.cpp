@@ -72,8 +72,8 @@ void AnimationExample::setupPropertyGroup()
 	animationTypes->setChoices({ ParameterAnimation, VertexAnimation, RigAnimation });
 
 	//time control
-//	auto controlTime = addProperty<bool>("control_time", this,
-//		&AnimationExample::timeControlled, &AnimationExample::setTimeControlled);
+    addProperty<bool>("control_time", this,
+        &AnimationExample::timeControlled, &AnimationExample::setTimeControlled);
 	
 	auto setTime = addProperty<float>("time", this,
 		&AnimationExample::getControlledTime, &AnimationExample::setControlledTime);
@@ -156,7 +156,8 @@ void AnimationExample::setVertexAnimation(const VertexAnimationOptions & animati
 		m_fps = 7;
 		break;
 	}
-	m_currentVertexAnimation = animation;
+    m_currentVertexAnimation = animation;
+    m_timeCapability->setLoopDuration(static_cast<float>(m_lastFrame-m_firstFrame+1)/m_fps);
 }
 
 void AnimationExample::initializeParameterAnimation(){
@@ -170,14 +171,21 @@ void AnimationExample::initializeParameterAnimation(){
 	keyframe.rotation = glm::quat();
 	keyframe.scale = glm::vec3(1.f, 1.f, 1.f);
 	m_animation->addKeyframe(keyframe);
-	keyframe.time = 1.f;
-	keyframe.translation = glm::vec3{ 1.f, 0.f, 0.f };
+    keyframe.time = 2.5f;
+    keyframe.translation = glm::vec3{ 3.f, -3.f, 7.f };
 	m_animation->addKeyframe(keyframe);
-	keyframe.time = 10.f;
-	keyframe.translation = glm::vec3{ -1.f, 0.f, 5.f };
-	keyframe.scale = glm::vec3(3.f, 1.f, 1.f);
+    keyframe.time = 5.f;
 	keyframe.rotation = glm::quat{ 0.f, 0.7f, 0.f, 0.7f };
-	m_animation->addKeyframe(keyframe);
+    m_animation->addKeyframe(keyframe);
+    keyframe.time = 7.5f;
+    keyframe.scale = glm::vec3(0.5f, 2.f, 1.f);
+    m_animation->addKeyframe(keyframe);
+    keyframe.time = 10.f;
+    keyframe.translation = glm::vec3{ 0.f, 0.f, 0.f };
+    keyframe.rotation = glm::quat();
+    keyframe.scale = glm::vec3(1.f, 1.f, 1.f);
+    m_animation->addKeyframe(keyframe);
+    m_timeCapability->setLoopDuration(10.f);
 }
 
 void AnimationExample::setupProjection()
@@ -212,7 +220,7 @@ void AnimationExample::onInitialize()
 
 	setupProjection();
 
-	setAnimationType(VertexAnimation);
+    setAnimationType(ParameterAnimation);
 	setVertexAnimation(STAND); // has to be set even if we are in other animations
 	m_initializeNewAnimation = true;
 
@@ -224,7 +232,7 @@ void AnimationExample::onInitialize()
 void AnimationExample::onPaint()
 {
 	//dependend on displayed animation (switch with menu later)
-	if (m_initializeNewAnimation == true){
+    if (m_initializeNewAnimation == true){
 		switch (m_currentAnimationType) {
 		case ParameterAnimation:
 			m_cameraCapability->setEye(vec3(0.0, 0.0, 30.0));
@@ -236,7 +244,9 @@ void AnimationExample::onPaint()
             md2LoaderInstance.loadModel("data/animationexample/Samourai.md2");
 			md2ModelDrawable = md2LoaderInstance.modelToGPU();
 			break;
-		case RigAnimation:
+        case RigAnimation:
+            m_cameraCapability->setEye(vec3(100.0,0.0,0.0));
+            m_timeCapability->setLoopDuration(5.7f);
 			m_program = new Program{};
 			m_program->attach(
 				Shader::fromFile(GL_VERTEX_SHADER, "data/animationexample/rigAnim.vert"),
@@ -245,11 +255,8 @@ void AnimationExample::onPaint()
 
 			m_transformLocation = m_program->getUniformLocation("transform");
 
-            //auto loader = gloperate_assimp::AssimpMeshLoader();
             auto model = std::string("data/animationexample/boblampclean.md5mesh");
             auto anim = std::string("data/animationexample/boblampclean.md5anim");
-            //auto func = std::function<void(int, int)>();
-            //auto opt = reflectionzeug::Variant();
             gloperate::PolygonalGeometry* guard = m_resourceManager.load<gloperate::PolygonalGeometry>(model);
             auto RigObj = new RiggedDrawable(*guard);
             gloperate::Scene* scene = m_resourceManager.load<gloperate::Scene>(anim);
@@ -291,10 +298,10 @@ void AnimationExample::onPaint()
     glEnable(GL_DEPTH_TEST);
 	
     const auto transform = m_projectionCapability->projection() * m_cameraCapability->view();
-    const auto eye = m_cameraCapability->eye();
+    //const auto eye = m_cameraCapability->eye();
 
-    m_grid->update(eye, transform);
-    m_grid->draw();
+    //m_grid->update(eye, transform);
+    //m_grid->draw();
 	
 	switch (m_currentAnimationType){
 	case ParameterAnimation:
@@ -307,7 +314,7 @@ void AnimationExample::onPaint()
 		m_program->use();
 		m_program->setUniform(m_transformLocation, transform);
 
-		m_animated->draw(m_timeCapability->time(), transform);//m_timeCapability->time(), transform);
+        m_animated->draw(m_currentTime, transform);//m_timeCapability->time(), transform);
 
 		m_program->release();
 		break;
