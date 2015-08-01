@@ -1,3 +1,6 @@
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 #include <RigAnimatedObject.h>
 
 #include <algorithm>
@@ -158,7 +161,7 @@ void RigAnimatedObject::interpolateRecursively(const BoneNode& Bone,
 
     glm::mat4 transform;
     transform = glm::translate(transform, translation);
-    transform = glm::scale(transform, scale);
+//    transform = glm::scale(transform, scale);
     transform = transform * glm::mat4_cast(rotation);
     transform = parentTransform * transform;
 
