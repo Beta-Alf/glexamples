@@ -161,7 +161,9 @@ void AnimationExample::setVertexAnimation(const VertexAnimationOptions & animati
 		break;
 	}
     m_currentVertexAnimation = animation;
-	m_timeCapability->setLoopDuration(static_cast<float>(m_lastFrame-m_firstFrame+1)/m_fps);
+	if (m_currentAnimationType == VertexAnimation){
+		m_timeCapability->setLoopDuration(static_cast<float>(m_lastFrame - m_firstFrame + 1) / m_fps);
+	}
 }
 
 void AnimationExample::initializeParameterAnimation(){
@@ -246,6 +248,7 @@ void AnimationExample::onPaint()
 			m_md2LoaderInstance = std::unique_ptr < md2Loader > {new md2Loader()};
             m_md2LoaderInstance->loadModel("data/animationexample/Samourai.md2");
 			m_md2ModelDrawable = std::unique_ptr < FrameDrawable > {m_md2LoaderInstance->modelToGPU()};
+			m_timeCapability->setLoopDuration(static_cast<float>(m_lastFrame - m_firstFrame + 1) / m_fps);
 			break;
         case RigAnimation:
             m_cameraCapability->setEye(vec3(100.0,0.0,0.0));
