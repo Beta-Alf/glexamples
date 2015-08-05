@@ -60,7 +60,7 @@ AnimationExample::~AnimationExample() = default;
 
 void AnimationExample::setupPropertyGroup()
 {
-	// drop-down menu to switch between Animation types
+	// Drop-down menu to switch between Animation types
 	auto animationTypes = addProperty<AnimationTypes>("Animation_Types", this,
 		&AnimationExample::animationType,
 		&AnimationExample::setAnimationType);
@@ -73,7 +73,7 @@ void AnimationExample::setupPropertyGroup()
 
 	animationTypes->setChoices({ ParameterAnimation, VertexAnimation, RigAnimation });
 
-	//time control
+	// Time control
 	auto TimeControllGroup = addGroup("TimeControll");
 
 	TimeControllGroup->addProperty<bool>("control_time", this,
@@ -89,7 +89,7 @@ void AnimationExample::setupPropertyGroup()
 	});
 
 	auto VertexAnimationGroup = addGroup("VertexAnimation");
-	// drop-down menu to switch between Vertex Animations
+	// Drop-down menu to switch between Vertex Animations
 	auto vertexAnimationOptions = VertexAnimationGroup->addProperty<VertexAnimationOptions>("Vertex_Animations", this,
 		&AnimationExample::vertexAnimation,
 		&AnimationExample::setVertexAnimation);
@@ -104,7 +104,7 @@ void AnimationExample::setupPropertyGroup()
 	vertexAnimationOptions->setChoices({ STAND, RUN, JUMP, SALUTE });
 }
 
-//getter and setter for the properties
+// Getter and setter for the properties
 bool AnimationExample::timeControlled() const{
 	return m_timeControlled;
 }
@@ -205,7 +205,7 @@ void AnimationExample::setupProjection()
 
 void AnimationExample::onInitialize()
 {
-    // create program
+    // Create program
 
     globjects::init();
 
@@ -225,7 +225,7 @@ void AnimationExample::onInitialize()
 	setupProjection();
 
     setAnimationType(ParameterAnimation);
-	setVertexAnimation(STAND); // has to be set even if we are in other animations
+	setVertexAnimation(STAND); 
 	m_initializeNewAnimation = true;
 
 	setTimeControlled(false);
@@ -234,7 +234,7 @@ void AnimationExample::onInitialize()
 
 void AnimationExample::onPaint()
 {
-	//dependend on displayed animation (switch with menu later)
+	// Dependend on displayed animation 
     if (m_initializeNewAnimation == true){
 		switch (m_currentAnimationType) {
 		case ParameterAnimation:
@@ -243,9 +243,9 @@ void AnimationExample::onPaint()
 			break;
 		case VertexAnimation:
 			m_cameraCapability->setEye(vec3(100.0, 0.0, 0.0)); // adjust viewpoint to the size of the models 
-			md2LoaderInstance = std::unique_ptr < md2Loader > {new md2Loader()};
-            md2LoaderInstance->loadModel("data/animationexample/Samourai.md2");
-			md2ModelDrawable = std::unique_ptr < FrameDrawable > {md2LoaderInstance->modelToGPU()};
+			m_md2LoaderInstance = std::unique_ptr < md2Loader > {new md2Loader()};
+            m_md2LoaderInstance->loadModel("data/animationexample/Samourai.md2");
+			m_md2ModelDrawable = std::unique_ptr < FrameDrawable > {m_md2LoaderInstance->modelToGPU()};
 			break;
         case RigAnimation:
             m_cameraCapability->setEye(vec3(100.0,0.0,0.0));
@@ -311,7 +311,7 @@ void AnimationExample::onPaint()
 		m_animation->draw(m_currentTime, transform);
 		break;
 	case VertexAnimation:
-		md2ModelDrawable->draw(m_firstFrame, m_lastFrame, m_fps, m_currentTime, transform);
+		m_md2ModelDrawable->draw(m_firstFrame, m_lastFrame, m_fps, m_currentTime, transform);
 		break;
 	case RigAnimation:
 		m_program->use();
