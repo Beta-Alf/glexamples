@@ -2,8 +2,6 @@
 #include <algorithm>
 #include <globjects/Program.h>
 
-typedef VertexKeyframe Frame;
-
 	//store the normal vectors in an array
 	glm::vec3 anorms[NUMVERTEXNORMALS] =
 	{	
@@ -24,9 +22,9 @@ void md2Loader::loadModel(const char* filename){
 	model = fopen(filename, "rb");
 	fread(&header, sizeof(md2_header), 1, model); // Read header where all info about model is stored
 
-	char* frameData = new char[header.num_frames * header.framesize]; // Read all frame data to one big buffer
-	fseek(model, header.offset_frames, SEEK_SET); //find the beginning of the frame data
-	fread(frameData, sizeof(char), header.num_frames * header.framesize, model); //put the frame Data into the buffer
+	char* frameData = new char[header.num_frames * header.framesize]; 
+	fseek(model, header.offset_frames, SEEK_SET); // Find the beginning of the frame data
+	fread(frameData, sizeof(char), header.num_frames * header.framesize, model); // Put the frame Data into the buffer
 
 	FrameVertices.resize(header.num_frames, std::vector<glm::vec3>(header.num_vertices)); // Allocate space for vertices
 	FrameNormals.resize(header.num_frames, std::vector<glm::vec3>(header.num_vertices)); // And normals
@@ -34,7 +32,7 @@ void md2Loader::loadModel(const char* filename){
 	// Extract vertices and normals from frame data (uncompress Vertex-data)
 	for (int i = 0; i < header.num_frames; i++)
 	{
-		Frame* frame = (Frame*)&frameData[header.framesize * i]; // Convert frameData to Frame-Array
+		VertexKeyframe* frame = (VertexKeyframe*)&frameData[header.framesize * i]; // Find Frame in frameData and cast into Frame-Type. 
 
 		for (int j = 0; j < header.num_vertices; j++)
 		{
@@ -51,31 +49,31 @@ gloperate::PolygonalGeometry md2Loader::createFrame(int number){
 
 	gloperate::PolygonalGeometry Frame;
 
-// Now let's read OpenGL rendering commands
+// Read OpenGL rendering commands
 	glCommands.resize(header.num_glcmds);
 	fseek(model, header.offset_glcmds, SEEK_SET);
-	fread(&glCommands[0], sizeof(int), header.num_glcmds, model); //write the Gl-Commands into array
+	fread(&glCommands[0], sizeof(int), header.num_glcmds, model); // Write the Gl-Commands into array
 	
 	unsigned int i = 0;
-	while (glCommands[i] != 0){ //ist die Anzahl der zu malenden Vertices 0, sind wir fertig
-		if (glCommands[i] < 0){ //draw with TriangleFan
+while (glCommands[i] != 0){ // We're finished when the number of vertives to draw equals 0
+	// Push vertices so the model is drawn correctliy with GL_triangle	
+	if (glCommands[i] < 0){ // Supposed to be drawn with TriangleFan
 			int numVertices = -(glCommands[i]);
-			i += 3; //for now I am leaving out the textureCoordinates
+			i += 3; // Jump over the Texture Coordinates (only need every third number)
 			unsigned int firstIndex = glCommands[i];
 			i += 3;
 			unsigned int lastPushed = glCommands[i];
-			for (int j = 2; j < numVertices; j++){
+			for (int j = 2; j < numVertices; j++){ 
 				VaoIndices.push_back(firstIndex);
 				VaoIndices.push_back(lastPushed);
-				i += 3; //get next Vertex
+				i += 3; // Get next Vertex
 				VaoIndices.push_back(glCommands[i]);
 				lastPushed = glCommands[i];
 			}
-			i++; //get to the next glCommand
 		}
-		else { //draw with TriangleStrips
+		else { // Supposed to be drawn with TriangleStrips
 			int numVertices = glCommands[i];
-			i += 3;
+			i += 3; 
 			unsigned int first = glCommands[i];
 			i += 3;
 			unsigned int second = glCommands[i];
@@ -87,10 +85,8 @@ gloperate::PolygonalGeometry md2Loader::createFrame(int number){
 				first = second;
 				second = glCommands[i];
 			}
-			i++;
 		}
-
-
+		i++; // Go to the next glCommand
 	}
 
 	Frame.setIndices(VaoIndices);
@@ -103,8 +99,8 @@ gloperate::PolygonalGeometry md2Loader::createFrame(int number){
 
 FrameDrawable* md2Loader::modelToGPU(){
 	for (int i = 0; i < header.num_frames; i++){
-		Frames.push_back(createFrame(i));
+		m_Frames.push_back(createFrame(i));
 	}
-	return new FrameDrawable(Frames);
+	return new FrameDrawable(m_Frames);
 }
 

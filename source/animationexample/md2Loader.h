@@ -64,23 +64,20 @@ public:
 	md2Loader();
 	~md2Loader();
 
-	md2_header header; //header of the object-file
-	FILE* model; //opbject-file
+	md2_header header; // Header of the object-file
+	FILE* model; // Object-file
 
-	std::vector<gloperate::PolygonalGeometry> Frames;
+	std::vector<gloperate::PolygonalGeometry> m_Frames;
 
     void loadModel(const char* filename);
 	FrameDrawable* modelToGPU();
 
 	gloperate::PolygonalGeometry createFrame(int number);
 
-	std::vector<VertexKeyframe> m_keyframes;
-	globjects::ref_ptr<globjects::Program> m_program;
-
 	std::vector< std::vector< glm::vec3 > > FrameVertices; // Vertices extracted for every frame
 	std::vector< std::vector< glm::vec3 > > FrameNormals; // Normal indices extracted for every vertex in every frame
-	std::vector< int > glCommands; // Rendering OpenGL commands
-	std::vector< unsigned int > VaoIndices; // Indices to give to the PolygonalGeometry Object for drawing
+	std::vector< int > glCommands; // OpenGL rendering commands
+	std::vector< unsigned int > VaoIndices; // Indices to give to the PolygonalGeometry Object for drawing in GL_Triangle
 
 	
 };
