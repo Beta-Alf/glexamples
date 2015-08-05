@@ -262,10 +262,10 @@ gloperate::PolygonalGeometry md2Loader::createFrame(int number){
 }
 
 
-FrameDrawable md2Loader::modelToGPU(){
+FrameDrawable* md2Loader::modelToGPU(){
 	for (int i = 0; i < header.num_frames; i++){
 		Frames.push_back(createFrame(i));
 	}
-	return FrameDrawable(Frames);
+	return new FrameDrawable(Frames);
 }
 

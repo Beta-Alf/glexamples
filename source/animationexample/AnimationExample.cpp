@@ -35,6 +35,8 @@
 #include <ParameterAnimatedObject.h>
 #include <RigAnimatedObject.h>
 #include <RiggedDrawable.h>
+#include <md2Loader.h>
+#include <FrameDrawable.h>
 
 
 using namespace gl;
@@ -241,9 +243,9 @@ void AnimationExample::onPaint()
 			break;
 		case VertexAnimation:
 			m_cameraCapability->setEye(vec3(100.0, 0.0, 0.0)); // adjust viewpoint to the size of the models 
-			md2LoaderInstance = md2Loader();
-            md2LoaderInstance.loadModel("data/animationexample/Samourai.md2");
-			md2ModelDrawable = md2LoaderInstance.modelToGPU();
+			md2LoaderInstance = std::unique_ptr < md2Loader > {new md2Loader()};
+            md2LoaderInstance->loadModel("data/animationexample/Samourai.md2");
+			md2ModelDrawable = std::unique_ptr < FrameDrawable > {md2LoaderInstance->modelToGPU()};
 			break;
         case RigAnimation:
             m_cameraCapability->setEye(vec3(100.0,0.0,0.0));
@@ -309,7 +311,7 @@ void AnimationExample::onPaint()
 		m_animation->draw(m_currentTime, transform);
 		break;
 	case VertexAnimation:
-		md2ModelDrawable.draw(m_firstFrame, m_lastFrame, m_fps, m_currentTime, transform);
+		md2ModelDrawable->draw(m_firstFrame, m_lastFrame, m_fps, m_currentTime, transform);
 		break;
 	case RigAnimation:
 		m_program->use();
