@@ -58,7 +58,7 @@ AnimationExample::~AnimationExample() = default;
 
 void AnimationExample::setupPropertyGroup()
 {
-	// drop-down menu to switc between Animation types
+	// drop-down menu to switch between Animation types
 	auto animationTypes = addProperty<AnimationTypes>("Animation_Types", this,
 		&AnimationExample::animationType,
 		&AnimationExample::setAnimationType);
@@ -72,10 +72,12 @@ void AnimationExample::setupPropertyGroup()
 	animationTypes->setChoices({ ParameterAnimation, VertexAnimation, RigAnimation });
 
 	//time control
-    addProperty<bool>("control_time", this,
+	auto TimeControllGroup = addGroup("TimeControll");
+
+	TimeControllGroup->addProperty<bool>("control_time", this,
         &AnimationExample::timeControlled, &AnimationExample::setTimeControlled);
 	
-	auto setTime = addProperty<float>("time", this,
+	auto setTime = TimeControllGroup->addProperty<float>("time", this,
 		&AnimationExample::getControlledTime, &AnimationExample::setControlledTime);
 	
 	setTime->setOptions({
@@ -84,8 +86,9 @@ void AnimationExample::setupPropertyGroup()
 			{ "step", 0.1f }
 	});
 
+	auto VertexAnimationGroup = addGroup("VertexAnimation");
 	// drop-down menu to switch between Vertex Animations
-	auto vertexAnimationOptions = addProperty<VertexAnimationOptions>("Vertex_Animations", this,
+	auto vertexAnimationOptions = VertexAnimationGroup->addProperty<VertexAnimationOptions>("Vertex_Animations", this,
 		&AnimationExample::vertexAnimation,
 		&AnimationExample::setVertexAnimation);
 
@@ -98,7 +101,6 @@ void AnimationExample::setupPropertyGroup()
 
 	vertexAnimationOptions->setChoices({ STAND, RUN, JUMP, SALUTE });
 }
-
 
 //getter and setter for the properties
 bool AnimationExample::timeControlled() const{
@@ -157,7 +159,7 @@ void AnimationExample::setVertexAnimation(const VertexAnimationOptions & animati
 		break;
 	}
     m_currentVertexAnimation = animation;
-    m_timeCapability->setLoopDuration(static_cast<float>(m_lastFrame-m_firstFrame+1)/m_fps);
+	m_timeCapability->setLoopDuration(static_cast<float>(m_lastFrame-m_firstFrame+1)/m_fps);
 }
 
 void AnimationExample::initializeParameterAnimation(){
@@ -224,7 +226,6 @@ void AnimationExample::onInitialize()
 	setVertexAnimation(STAND); // has to be set even if we are in other animations
 	m_initializeNewAnimation = true;
 
-	m_timeCapability->setLoopDuration(10); 
 	setTimeControlled(false);
 	setControlledTime(0.0);
 }
