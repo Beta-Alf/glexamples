@@ -31,16 +31,16 @@ namespace gloperate
 class RigAnimatedObject
 {
 public:
-    RigAnimatedObject(RiggedDrawable *animated, gloperate::Scene *animations);
+    RigAnimatedObject(gloperate::Scene *animated, gloperate::Scene *animations);
     void draw(float time, const glm::mat4& viewProjection);
-    std::vector<glm::mat4> interpolate(float t);
+    std::vector<glm::mat4> interpolate(float t, std::shared_ptr<RiggedDrawable> curAnimated);
 
 private:
-    void interpolateRecursively(const gloperate::BoneNode& Bone, float t, std::vector<glm::mat4>& into, glm::mat4 parentTransform);
+    void interpolateRecursively(const gloperate::BoneNode& Bone, float t, std::vector<glm::mat4>& into, glm::mat4 parentTransform, std::shared_ptr<RiggedDrawable> curAnimated);
 
     int numBones;
     globjects::ref_ptr<globjects::Program> m_program;
-    std::shared_ptr<RiggedDrawable> m_animated;
+    std::vector<std::shared_ptr<RiggedDrawable>> m_animated;
     std::shared_ptr<gloperate::Scene> m_animations;
     globjects::ref_ptr<globjects::Uniform<std::vector<glm::mat4>>> m_bonesUniform;
     gl::GLint m_transformLocation;

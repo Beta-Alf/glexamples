@@ -35,17 +35,9 @@ public:
     */
     virtual ~RiggedDrawable() = default;
 
-    /**
-    *  @brief
-    *    Draw geometry
-    *
-    *  @remarks
-    *    The geometry is drawn as an indexed geometry of type GL_TRIANGLES.
-    */
-    //virtual void draw() override;
 
 
-    std::map<std::string,size_t>                   m_boneMapping;         /**< Mapping from string to boneIndex > */
+    std::map<std::string,size_t>               m_boneMapping;         /**< Mapping from string to boneIndex > */
     std::vector<glm::mat4>                     m_bindTransforms;      /**< bind Matrices per bone> */
 
 protected:

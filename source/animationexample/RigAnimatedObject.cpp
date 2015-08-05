@@ -11,6 +11,7 @@
 
 #include <gloperate/primitives/AbstractDrawable.h>
 #include <gloperate/primitives/PolygonalDrawable.h>
+#include <gloperate/primitives/PolygonalGeometry.h>
 
 #include <gloperate-assimp/AssimpSceneLoader.h>
 
@@ -19,9 +20,13 @@
 using namespace gl;
 using namespace globjects;
 
-RigAnimatedObject::RigAnimatedObject(RiggedDrawable *animated, gloperate::Scene *animations)
+RigAnimatedObject::RigAnimatedObject(gloperate::Scene *animated, gloperate::Scene *animations)
 {
-    m_animated = std::shared_ptr<RiggedDrawable>(animated);
+
+    for(gloperate::PolygonalGeometry* curDrawable : animated->meshes())
+    {
+        m_animated.push_back(std::shared_ptr<RiggedDrawable>{new RiggedDrawable(*curDrawable)});
+    }
     m_animations = std::shared_ptr<gloperate::Scene>(animations);
 
     m_program = new Program{};
@@ -36,31 +41,29 @@ RigAnimatedObject::RigAnimatedObject(RiggedDrawable *animated, gloperate::Scene 
 
 void RigAnimatedObject::draw(float time, const glm::mat4 &viewProjection)
 {
+    time=time;
 
-    std::vector<glm::mat4> current = interpolate(time);
+    for(auto& curDrawable : m_animated)
+    {
+        std::vector<glm::mat4> current{curDrawable->m_bindTransforms.size()};// = interpolate(time, curDrawable);
 
-    glm::quat rotation;
-    rotation = glm::rotate(rotation, static_cast<float>(M_PI)*0.5f,glm::vec3{0.0,0.0,1.0});
-    rotation = glm::rotate(rotation, static_cast<float>(M_PI)*0.5f,glm::vec3{0.0,1.0,0.0});
-    auto rotated = glm::mat4_cast(rotation);
-    rotated = glm::translate(rotated, glm::vec3{0,9,-25});
+        m_program->use();
+        m_program->setUniform(m_transformLocation,  viewProjection);
 
-    m_program->use();
-    m_program->setUniform(m_transformLocation,  viewProjection * rotated);
+        m_bonesUniform->set(current);
 
-    m_bonesUniform->set(current);
-
-    m_animated->draw();
+        curDrawable->draw();
+    }
 
     m_program->release();
 }
 
-std::vector<glm::mat4> RigAnimatedObject::interpolate(float t)
+std::vector<glm::mat4> RigAnimatedObject::interpolate(float t, std::shared_ptr<RiggedDrawable> curAnimated)
 {
-    std::vector<glm::mat4> boneTransforms{m_animated->m_bindTransforms.size()};
+    std::vector<glm::mat4> boneTransforms{curAnimated->m_bindTransforms.size()};
 
     interpolateRecursively(*(m_animations->boneHierarchy()), t, boneTransforms,
-                           glm::mat4());
+                           glm::mat4(), curAnimated);
 
     return boneTransforms;
 }
@@ -68,17 +71,17 @@ std::vector<glm::mat4> RigAnimatedObject::interpolate(float t)
 void RigAnimatedObject::interpolateRecursively(const BoneNode& Bone,
                                                float t,
                                                std::vector<glm::mat4> &into,
-                                               glm::mat4 parentTransform)
+                                               glm::mat4 parentTransform,
+                                               std::shared_ptr<RiggedDrawable> curAnimated)
 
 {
 
-    //Find the correct Channel (we are only using the first animation of the scene)
     //Of course sometimes the model and the animation have different views about the start of the hierarchy
-    if(Bone.boneName == "<MD5_Hierarchy>")
-    {
-        interpolateRecursively(Bone.children[0],t,into,parentTransform);
-        return;
-    }
+    //if(Bone.boneName == "<MD5_Hierarchy>")
+    //{
+    //    interpolateRecursively(Bone.children[0],t,into,parentTransform,curAnimated);
+    //    return;
+    //}
     gloperate::RigAnimationTrack* Animation = m_animations->animations()[0];
     gloperate::Channel* BoneChannel = nullptr;
     for(size_t i = 0; i < Animation->boneChannels.size(); i++)
@@ -90,6 +93,7 @@ void RigAnimatedObject::interpolateRecursively(const BoneNode& Bone,
     }
     if(!BoneChannel)
     {
+        interpolateRecursively(Bone.children[0],t,into,parentTransform,curAnimated);
         return;
     }
 
@@ -156,20 +160,50 @@ void RigAnimatedObject::interpolateRecursively(const BoneNode& Bone,
          }
     }
 
+    glm::vec3 scale;
+    if(BoneChannel->scale.size() > 1)
+    {
+        gloperate::ScaleKey first,second;
+        for(size_t i = 0; i < BoneChannel->scale.size(); i++)
+        {
+            if(ticks < BoneChannel->scale[i].time)
+            {
+                second = BoneChannel->scale[i];
+            }
+            else
+            {
+                first = BoneChannel->scale[i];
+            }
+        }
+        float dist = second.time - first.time;
+        float pos = t - first.time; // The distance to the first frame
+        float normPos = pos/dist;	// Normalized position between 0 an 1
+        normPos = normPos < 0 ? 0 : normPos;
+        normPos = normPos > 1 ? 1 : normPos;
+        scale = glm::mix(first.scale,second.scale,normPos);
+    }
+    else
+    {
+         if(BoneChannel->scale.size() != 0)
+         {
+            translation = BoneChannel->scale[0].scale;
+         }
+    }
+
     glm::mat4 transform;
     transform = glm::translate(transform, translation);
     transform = glm::scale(transform, scale);
     transform = transform * glm::mat4_cast(rotation);
     transform = parentTransform * transform;
 
-    if(m_animated->m_boneMapping.count(BoneChannel->boneName) == 1)
+    if(curAnimated->m_boneMapping.count(BoneChannel->boneName) == 1)
     {
-        auto boneIndex = m_animated->m_boneMapping.at(BoneChannel->boneName);
-        into[boneIndex] = transform * m_animated->m_bindTransforms[boneIndex];
+        auto boneIndex = curAnimated->m_boneMapping.at(BoneChannel->boneName);
+        into[boneIndex] = transform * curAnimated->m_bindTransforms[boneIndex];
     }
 
     for (auto& child : Bone.children) {
 
-        interpolateRecursively(child, t, into, transform);
+        interpolateRecursively(child, t, into, transform, curAnimated);
     }
 }

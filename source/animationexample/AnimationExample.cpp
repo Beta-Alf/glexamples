@@ -58,7 +58,7 @@ AnimationExample::~AnimationExample() = default;
 
 void AnimationExample::setupPropertyGroup()
 {
-	// drop-down menu to switc between Animation types
+    // drop-down menu to switch between Animation types
 	auto animationTypes = addProperty<AnimationTypes>("Animation_Types", this,
 		&AnimationExample::animationType,
 		&AnimationExample::setAnimationType);
@@ -257,10 +257,9 @@ void AnimationExample::onPaint()
 
             auto model = std::string("data/animationexample/boblampclean.md5mesh");
             auto anim = std::string("data/animationexample/boblampclean.md5anim");
-            gloperate::PolygonalGeometry* guard = m_resourceManager.load<gloperate::PolygonalGeometry>(model);
-            auto RigObj = new RiggedDrawable(*guard);
+            gloperate::Scene* guard = m_resourceManager.load<gloperate::Scene>(model);
             gloperate::Scene* scene = m_resourceManager.load<gloperate::Scene>(anim);
-            m_animated = std::unique_ptr<RigAnimatedObject>{new RigAnimatedObject(RigObj, scene)};
+            m_animated = std::unique_ptr<RigAnimatedObject>{new RigAnimatedObject(guard, scene)};
 			glClearColor(0.85f, 0.87f, 0.91f, 1.0f);
 			break;
 		}
@@ -311,8 +310,15 @@ void AnimationExample::onPaint()
 		md2ModelDrawable.draw(m_firstFrame, m_lastFrame, m_fps, m_currentTime, transform);
 		break;
 	case RigAnimation:
-		m_program->use();
-		m_program->setUniform(m_transformLocation, transform);
+        m_program->use();
+
+        //Accomodate model rotation
+        glm::quat rotation;
+        rotation = glm::rotate(rotation, static_cast<float>(M_PI)*0.5f,glm::vec3{0.0,0.0,1.0});
+        rotation = glm::rotate(rotation, static_cast<float>(M_PI)*0.5f,glm::vec3{0.0,1.0,0.0});
+        auto rotated = glm::mat4_cast(rotation);
+        rotated = glm::translate(rotated, glm::vec3{0,9,-25});
+        m_program->setUniform(m_transformLocation, transform * rotated);
 
         m_animated->draw(m_currentTime, transform);//m_timeCapability->time(), transform);
 
