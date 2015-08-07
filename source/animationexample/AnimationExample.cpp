@@ -310,19 +310,14 @@ void AnimationExample::onPaint()
 		md2ModelDrawable.draw(m_firstFrame, m_lastFrame, m_fps, m_currentTime, transform);
 		break;
 	case RigAnimation:
-        m_program->use();
-
         //Accomodate model rotation
         glm::quat rotation;
         rotation = glm::rotate(rotation, static_cast<float>(M_PI)*0.5f,glm::vec3{0.0,0.0,1.0});
         rotation = glm::rotate(rotation, static_cast<float>(M_PI)*0.5f,glm::vec3{0.0,1.0,0.0});
         auto rotated = glm::mat4_cast(rotation);
         rotated = glm::translate(rotated, glm::vec3{0,9,-25});
-        m_program->setUniform(m_transformLocation, transform * rotated);
 
-        m_animated->draw(m_currentTime, transform);//m_timeCapability->time(), transform);
-
-		m_program->release();
+        m_animated->draw(m_currentTime, transform * rotated);//m_timeCapability->time(), transform);
 		break;
 	}
 	

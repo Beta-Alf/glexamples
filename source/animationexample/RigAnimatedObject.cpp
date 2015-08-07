@@ -41,11 +41,10 @@ RigAnimatedObject::RigAnimatedObject(gloperate::Scene *animated, gloperate::Scen
 
 void RigAnimatedObject::draw(float time, const glm::mat4 &viewProjection)
 {
-    time=time;
 
     for(auto& curDrawable : m_animated)
     {
-        std::vector<glm::mat4> current{curDrawable->m_bindTransforms.size()};// = interpolate(time, curDrawable);
+        std::vector<glm::mat4> current = interpolate(time, curDrawable);
 
         m_program->use();
         m_program->setUniform(m_transformLocation,  viewProjection);
@@ -192,7 +191,7 @@ void RigAnimatedObject::interpolateRecursively(const BoneNode& Bone,
 
     glm::mat4 transform;
     transform = glm::translate(transform, translation);
-    transform = glm::scale(transform, scale);
+    //transform = glm::scale(transform, scale);
     transform = transform * glm::mat4_cast(rotation);
     transform = parentTransform * transform;
 
