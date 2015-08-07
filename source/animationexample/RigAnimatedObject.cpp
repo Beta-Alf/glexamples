@@ -185,7 +185,7 @@ void RigAnimatedObject::interpolateRecursively(const BoneNode& Bone,
     {
          if(BoneChannel->scale.size() != 0)
          {
-            translation = BoneChannel->scale[0].scale;
+            scale = BoneChannel->scale[0].scale;
          }
     }
 
