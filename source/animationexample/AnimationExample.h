@@ -8,9 +8,9 @@
 
 #include <gloperate/painter/Painter.h>
 
-#include <md2Loader.h>
+class md2Loader;
 
-#include <FrameDrawable.h>
+class FrameDrawable;
 
 class RigAnimatedObject;
 
@@ -63,6 +63,8 @@ protected:
 
 	std::unique_ptr<ParameterAnimatedObject> m_animation;
 	std::unique_ptr<RigAnimatedObject> m_animated;
+	std::unique_ptr<md2Loader> m_md2LoaderInstance;
+	std::unique_ptr<FrameDrawable> m_md2ModelDrawable;
 	
 	AnimationTypes m_currentAnimationType;
 	bool m_initializeNewAnimation;
@@ -71,28 +73,24 @@ protected:
 	bool m_timeControlled;
 	float m_controlledTime;
 
-	//Vertex Animation specifieres
+	// Vertex Animation specifieres
 	int m_firstFrame;
 	int m_lastFrame;
 	int m_fps;
 	float m_interpolationFactor;
 	VertexAnimationOptions m_currentVertexAnimation;
-	md2Loader md2LoaderInstance;
-	FrameDrawable md2ModelDrawable;
 
-	//Property-functions
-	VertexAnimationOptions vertexAnimation() const;
-	void setVertexAnimation(const VertexAnimationOptions & animation);
-
+	// Property-functions
+	AnimationTypes animationType() const;
+	void setAnimationType(const AnimationTypes & type);
+	
 	bool timeControlled() const;
 	void setTimeControlled(bool controlled);
 	float getControlledTime() const;
 	void setControlledTime(float newtime);
 
-
-	AnimationTypes animationType() const;
-	void setAnimationType(const AnimationTypes & type);
-
+	VertexAnimationOptions vertexAnimation() const;
+	void setVertexAnimation(const VertexAnimationOptions & animation);
 
 private:
 	int m_maxDistance;

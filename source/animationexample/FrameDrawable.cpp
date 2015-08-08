@@ -1,6 +1,6 @@
 #include "FrameDrawable.h"
 
-#include <iostream>
+#include <globjects/DebugMessage.h>
 
 #include <glm/glm.hpp>
 
@@ -21,12 +21,11 @@ FrameDrawable::FrameDrawable(const std::vector<gloperate::PolygonalGeometry> & g
 	// Save number of elements in index buffer
 	m_size = static_cast<gl::GLsizei>(geometries[0].indices().size());
 	
-	//indices are the same for every frame
+	// Indices are the same for every frame
 	m_indices = new globjects::Buffer;
 	m_indices->setData(geometries[0].indices(), gl::GL_STATIC_DRAW); 
 
-	m_numFrames = geometries.size();
-	for (int i = 0; i < m_numFrames; i++){
+    for (size_t i = 0; i < geometries.size(); i++){ // For all frames
 
 		// Create and copy vertex buffer
 		globjects::ref_ptr<globjects::Buffer> vertices = new globjects::Buffer;
@@ -40,7 +39,7 @@ FrameDrawable::FrameDrawable(const std::vector<gloperate::PolygonalGeometry> & g
 			normals->setData(geometries[i].normals(), gl::GL_STATIC_DRAW);
 		}
 
-		//put Data into frame_vectors
+		// Put Data into frame_vectors
 		m_frame_normals.push_back(normals);
 		m_frame_vertices.push_back(vertices);
 	}
@@ -61,7 +60,7 @@ FrameDrawable::~FrameDrawable()
 }
 
 void FrameDrawable::draw(){
-	assert(false); // you cannot draw the object without the transformation matrix
+	globjects::debug() << "Error: The Object cannot be drawn without the Transformation-Matrix" << std::endl;
 }
 
 void FrameDrawable::draw(int firstFrame, int lastFrame, int fps, float time, const glm::mat4& transform){
@@ -69,7 +68,7 @@ void FrameDrawable::draw(int firstFrame, int lastFrame, int fps, float time, con
 	m_program->use();
 	m_program->setUniform(m_transformLocation, transform);
 
-	// calculate which frame to draw and how much to interpolate
+	// Calculate which frame to draw and how much to interpolate
     int numFramesAnim = lastFrame - firstFrame + 1;
 	float temp = time * fps;
 	int offset = floor(temp);
@@ -78,16 +77,16 @@ void FrameDrawable::draw(int firstFrame, int lastFrame, int fps, float time, con
 	int currentFrame = firstFrame + (offset % numFramesAnim);
 	int nextFrame = firstFrame + ((offset + 1) % numFramesAnim);
 
-	m_program->setUniform(m_interpolationLocation, interpolationFactor);
+	m_program->setUniform(m_interpolationLocation, interpolationFactor); 
 
 	// Create vertex array object
 	m_vao = new globjects::VertexArray;
 	m_vao->bind();
 
-	//bind indices
+	// Bind indices
 	m_indices->bind(gl::GL_ELEMENT_ARRAY_BUFFER);
 	
-	//bind frame1
+	// Bind frame1
 	auto vertexBinding = m_vao->binding(0);
 	vertexBinding->setAttribute(0);
 	vertexBinding->setBuffer(m_frame_vertices[currentFrame], 0, sizeof(glm::vec3));
@@ -103,7 +102,7 @@ void FrameDrawable::draw(int firstFrame, int lastFrame, int fps, float time, con
 		m_vao->enable(1);
 	}
 
-	//bind frame2
+	// Bind frame2
 	vertexBinding = m_vao->binding(2);
 	vertexBinding->setAttribute(2);
 	vertexBinding->setBuffer(m_frame_vertices[nextFrame], 0, sizeof(glm::vec3));
@@ -125,8 +124,8 @@ void FrameDrawable::draw(int firstFrame, int lastFrame, int fps, float time, con
 
 	while (auto a = gl::glGetError() != gl::GL_NO_ERROR)
 	{
-		std::cout << "Error detected" << std::endl;
-		std::cout << a << std::endl;
+		globjects::debug() << "Error detected" << std::endl;
+		globjects::debug() << a << std::endl;
 	}
 
 }

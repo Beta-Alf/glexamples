@@ -6,7 +6,8 @@
 #include <vector>
 #include <gloperate/primitives/PolygonalGeometry.h>
 #include <gloperate/primitives/PolygonalDrawable.h>
-#include <FrameDrawable.h>
+
+class FrameDrawable;
 
 // number of vertex normals in anorms.h file used for decompressing normals in a md2 file
 #define NUMVERTEXNORMALS		162
@@ -64,23 +65,22 @@ public:
 	md2Loader();
 	~md2Loader();
 
-	md2_header header; //header of the object-file
-	FILE* model; //opbject-file
+	void loadModel(const char* filename);
+	FrameDrawable* modelToGPU();
 
-	std::vector<gloperate::PolygonalGeometry> Frames;
-
-    void loadModel(const char* filename);
-	FrameDrawable modelToGPU();
-
+protected:
 	gloperate::PolygonalGeometry createFrame(int number);
 
-	std::vector<VertexKeyframe> m_keyframes;
-	globjects::ref_ptr<globjects::Program> m_program;
+	md2_header m_header; // Header of the object-file
+	FILE* m_model; // Object-file
 
-	std::vector< std::vector< glm::vec3 > > FrameVertices; // Vertices extracted for every frame
-	std::vector< std::vector< glm::vec3 > > FrameNormals; // Normal indices extracted for every vertex in every frame
-	std::vector< int > glCommands; // Rendering OpenGL commands
-	std::vector< unsigned int > VaoIndices; // Indices to give to the PolygonalGeometry Object for drawing
+	// Member-variables
+	std::vector<gloperate::PolygonalGeometry> m_Frames;
+	
+	std::vector< std::vector< glm::vec3 > > m_FrameVertices; // Vertices extracted for every frame
+	std::vector< std::vector< glm::vec3 > > m_FrameNormals; // Normal indices extracted for every vertex in every frame
+	std::vector< int > m_glCommands; // OpenGL rendering commands
+	std::vector< unsigned int > m_VaoIndices; // Indices to give to the PolygonalGeometry Object for drawing in GL_Triangle
 
 	
 };

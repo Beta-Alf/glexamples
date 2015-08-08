@@ -1,209 +1,47 @@
 #include "md2Loader.h"
 #include <algorithm>
 #include <globjects/Program.h>
-
-typedef VertexKeyframe Frame;
+#include <FrameDrawable.h>
 
 	//store the normal vectors in an array
 	glm::vec3 anorms[NUMVERTEXNORMALS] =
-	{	//anorms hier reinkopiert...
-		{ -0.525731, 0.000000, 0.850651 },
-		{ -0.442863, 0.238856, 0.864188 },
-		{ -0.295242, 0.000000, 0.955423 },
-		{ -0.309017, 0.500000, 0.809017 },
-		{ -0.162460, 0.262866, 0.951056 },
-		{ 0.000000, 0.000000, 1.000000 },
-		{ 0.000000, 0.850651, 0.525731 },
-		{ -0.147621, 0.716567, 0.681718 },
-		{ 0.147621, 0.716567, 0.681718 },
-		{ 0.000000, 0.525731, 0.850651 },
-		{ 0.309017, 0.500000, 0.809017 },
-		{ 0.525731, 0.000000, 0.850651 },
-		{ 0.295242, 0.000000, 0.955423 },
-		{ 0.442863, 0.238856, 0.864188 },
-		{ 0.162460, 0.262866, 0.951056 },
-		{ -0.681718, 0.147621, 0.716567 },
-		{ -0.809017, 0.309017, 0.500000 },
-		{ -0.587785, 0.425325, 0.688191 },
-		{ -0.850651, 0.525731, 0.000000 },
-		{ -0.864188, 0.442863, 0.238856 },
-		{ -0.716567, 0.681718, 0.147621 },
-		{ -0.688191, 0.587785, 0.425325 },
-		{ -0.500000, 0.809017, 0.309017 },
-		{ -0.238856, 0.864188, 0.442863 },
-		{ -0.425325, 0.688191, 0.587785 },
-		{ -0.716567, 0.681718, -0.147621 },
-		{ -0.500000, 0.809017, -0.309017 },
-		{ -0.525731, 0.850651, 0.000000 },
-		{ 0.000000, 0.850651, -0.525731 },
-		{ -0.238856, 0.864188, -0.442863 },
-		{ 0.000000, 0.955423, -0.295242 },
-		{ -0.262866, 0.951056, -0.162460 },
-		{ 0.000000, 1.000000, 0.000000 },
-		{ 0.000000, 0.955423, 0.295242 },
-		{ -0.262866, 0.951056, 0.162460 },
-		{ 0.238856, 0.864188, 0.442863 },
-		{ 0.262866, 0.951056, 0.162460 },
-		{ 0.500000, 0.809017, 0.309017 },
-		{ 0.238856, 0.864188, -0.442863 },
-		{ 0.262866, 0.951056, -0.162460 },
-		{ 0.500000, 0.809017, -0.309017 },
-		{ 0.850651, 0.525731, 0.000000 },
-		{ 0.716567, 0.681718, 0.147621 },
-		{ 0.716567, 0.681718, -0.147621 },
-		{ 0.525731, 0.850651, 0.000000 },
-		{ 0.425325, 0.688191, 0.587785 },
-		{ 0.864188, 0.442863, 0.238856 },
-		{ 0.688191, 0.587785, 0.425325 },
-		{ 0.809017, 0.309017, 0.500000 },
-		{ 0.681718, 0.147621, 0.716567 },
-		{ 0.587785, 0.425325, 0.688191 },
-		{ 0.955423, 0.295242, 0.000000 },
-		{ 1.000000, 0.000000, 0.000000 },
-		{ 0.951056, 0.162460, 0.262866 },
-		{ 0.850651, -0.525731, 0.000000 },
-		{ 0.955423, -0.295242, 0.000000 },
-		{ 0.864188, -0.442863, 0.238856 },
-		{ 0.951056, -0.162460, 0.262866 },
-		{ 0.809017, -0.309017, 0.500000 },
-		{ 0.681718, -0.147621, 0.716567 },
-		{ 0.850651, 0.000000, 0.525731 },
-		{ 0.864188, 0.442863, -0.238856 },
-		{ 0.809017, 0.309017, -0.500000 },
-		{ 0.951056, 0.162460, -0.262866 },
-		{ 0.525731, 0.000000, -0.850651 },
-		{ 0.681718, 0.147621, -0.716567 },
-		{ 0.681718, -0.147621, -0.716567 },
-		{ 0.850651, 0.000000, -0.525731 },
-		{ 0.809017, -0.309017, -0.500000 },
-		{ 0.864188, -0.442863, -0.238856 },
-		{ 0.951056, -0.162460, -0.262866 },
-		{ 0.147621, 0.716567, -0.681718 },
-		{ 0.309017, 0.500000, -0.809017 },
-		{ 0.425325, 0.688191, -0.587785 },
-		{ 0.442863, 0.238856, -0.864188 },
-		{ 0.587785, 0.425325, -0.688191 },
-		{ 0.688191, 0.587785, -0.425325 },
-		{ -0.147621, 0.716567, -0.681718 },
-		{ -0.309017, 0.500000, -0.809017 },
-		{ 0.000000, 0.525731, -0.850651 },
-		{ -0.525731, 0.000000, -0.850651 },
-		{ -0.442863, 0.238856, -0.864188 },
-		{ -0.295242, 0.000000, -0.955423 },
-		{ -0.162460, 0.262866, -0.951056 },
-		{ 0.000000, 0.000000, -1.000000 },
-		{ 0.295242, 0.000000, -0.955423 },
-		{ 0.162460, 0.262866, -0.951056 },
-		{ -0.442863, -0.238856, -0.864188 },
-		{ -0.309017, -0.500000, -0.809017 },
-		{ -0.162460, -0.262866, -0.951056 },
-		{ 0.000000, -0.850651, -0.525731 },
-		{ -0.147621, -0.716567, -0.681718 },
-		{ 0.147621, -0.716567, -0.681718 },
-		{ 0.000000, -0.525731, -0.850651 },
-		{ 0.309017, -0.500000, -0.809017 },
-		{ 0.442863, -0.238856, -0.864188 },
-		{ 0.162460, -0.262866, -0.951056 },
-		{ 0.238856, -0.864188, -0.442863 },
-		{ 0.500000, -0.809017, -0.309017 },
-		{ 0.425325, -0.688191, -0.587785 },
-		{ 0.716567, -0.681718, -0.147621 },
-		{ 0.688191, -0.587785, -0.425325 },
-		{ 0.587785, -0.425325, -0.688191 },
-		{ 0.000000, -0.955423, -0.295242 },
-		{ 0.000000, -1.000000, 0.000000 },
-		{ 0.262866, -0.951056, -0.162460 },
-		{ 0.000000, -0.850651, 0.525731 },
-		{ 0.000000, -0.955423, 0.295242 },
-		{ 0.238856, -0.864188, 0.442863 },
-		{ 0.262866, -0.951056, 0.162460 },
-		{ 0.500000, -0.809017, 0.309017 },
-		{ 0.716567, -0.681718, 0.147621 },
-		{ 0.525731, -0.850651, 0.000000 },
-		{ -0.238856, -0.864188, -0.442863 },
-		{ -0.500000, -0.809017, -0.309017 },
-		{ -0.262866, -0.951056, -0.162460 },
-		{ -0.850651, -0.525731, 0.000000 },
-		{ -0.716567, -0.681718, -0.147621 },
-		{ -0.716567, -0.681718, 0.147621 },
-		{ -0.525731, -0.850651, 0.000000 },
-		{ -0.500000, -0.809017, 0.309017 },
-		{ -0.238856, -0.864188, 0.442863 },
-		{ -0.262866, -0.951056, 0.162460 },
-		{ -0.864188, -0.442863, 0.238856 },
-		{ -0.809017, -0.309017, 0.500000 },
-		{ -0.688191, -0.587785, 0.425325 },
-		{ -0.681718, -0.147621, 0.716567 },
-		{ -0.442863, -0.238856, 0.864188 },
-		{ -0.587785, -0.425325, 0.688191 },
-		{ -0.309017, -0.500000, 0.809017 },
-		{ -0.147621, -0.716567, 0.681718 },
-		{ -0.425325, -0.688191, 0.587785 },
-		{ -0.162460, -0.262866, 0.951056 },
-		{ 0.442863, -0.238856, 0.864188 },
-		{ 0.162460, -0.262866, 0.951056 },
-		{ 0.309017, -0.500000, 0.809017 },
-		{ 0.147621, -0.716567, 0.681718 },
-		{ 0.000000, -0.525731, 0.850651 },
-		{ 0.425325, -0.688191, 0.587785 },
-		{ 0.587785, -0.425325, 0.688191 },
-		{ 0.688191, -0.587785, 0.425325 },
-		{ -0.955423, 0.295242, 0.000000 },
-		{ -0.951056, 0.162460, 0.262866 },
-		{ -1.000000, 0.000000, 0.000000 },
-		{ -0.850651, 0.000000, 0.525731 },
-		{ -0.955423, -0.295242, 0.000000 },
-		{ -0.951056, -0.162460, 0.262866 },
-		{ -0.864188, 0.442863, -0.238856 },
-		{ -0.951056, 0.162460, -0.262866 },
-		{ -0.809017, 0.309017, -0.500000 },
-		{ -0.864188, -0.442863, -0.238856 },
-		{ -0.951056, -0.162460, -0.262866 },
-		{ -0.809017, -0.309017, -0.500000 },
-		{ -0.681718, 0.147621, -0.716567 },
-		{ -0.681718, -0.147621, -0.716567 },
-		{ -0.850651, 0.000000, -0.525731 },
-		{ -0.688191, 0.587785, -0.425325 },
-		{ -0.587785, 0.425325, -0.688191 },
-		{ -0.425325, 0.688191, -0.587785 },
-		{ -0.425325, -0.688191, -0.587785 },
-		{ -0.587785, -0.425325, -0.688191 },
-		{ -0.688191, -0.587785, -0.425325 }
+	{	
+#include <anorms.h>
 	};
 
-	md2Loader::md2Loader() : model(nullptr){
+	md2Loader::md2Loader() : m_model(nullptr){
 	}
 
 	md2Loader::~md2Loader(){
-		if (model != nullptr)
+		if (m_model != nullptr)
 		{
-			fclose(model);
+			fclose(m_model);
 		}
 	}
 
 void md2Loader::loadModel(const char* filename){
-	model = fopen(filename, "rb");
-	fread(&header, sizeof(md2_header), 1, model); // Read header where all info about model is stored
+	m_model = fopen(filename, "rb");
+	fread(&m_header, sizeof(md2_header), 1, m_model); // Read header where all info about model is stored
 
-	char* frameData = new char[header.num_frames * header.framesize]; // Read all frame data to one big buffer
-	fseek(model, header.offset_frames, SEEK_SET); //find the beginning of the frame data
-	fread(frameData, sizeof(char), header.num_frames * header.framesize, model); //put the frame Data into the buffer
+	char* frameData = new char[m_header.num_frames * m_header.framesize]; 
+	fseek(m_model, m_header.offset_frames, SEEK_SET); // Find the beginning of the frame data
+	fread(frameData, sizeof(char), m_header.num_frames * m_header.framesize, m_model); // Put the frame Data into the buffer
 
-	FrameVertices.resize(header.num_frames, std::vector<glm::vec3>(header.num_vertices)); // Allocate space for vertices
-	FrameNormals.resize(header.num_frames, std::vector<glm::vec3>(header.num_vertices)); // And normals
+	m_FrameVertices.resize(m_header.num_frames, std::vector<glm::vec3>(m_header.num_vertices)); // Allocate space for vertices
+	m_FrameNormals.resize(m_header.num_frames, std::vector<glm::vec3>(m_header.num_vertices)); // And normals
 
 	// Extract vertices and normals from frame data (uncompress Vertex-data)
-	for (int i = 0; i < header.num_frames; i++)
+	for (int i = 0; i < m_header.num_frames; i++)
 	{
-		Frame* frame = (Frame*)&frameData[header.framesize * i]; // Convert frameData to Frame-Array
+		VertexKeyframe* frame = (VertexKeyframe*)&frameData[m_header.framesize * i]; // Find Frame in frameData and cast into Frame-Type. 
 
-		for (int j = 0; j < header.num_vertices; j++)
+		for (int j = 0; j < m_header.num_vertices; j++)
 		{
-			FrameVertices[i][j].x = frame->translate[0] + (float(frame->vertices[j].position[0]) * frame->scale[0]);
-			FrameVertices[i][j].z = frame->translate[1] + (float(frame->vertices[j].position[1]) * frame->scale[1]); // z and y need to be switched so the model stands upright
-			FrameVertices[i][j].y = frame->translate[2] + (float(frame->vertices[j].position[2]) * frame->scale[2]);
+			m_FrameVertices[i][j].x = frame->translate[0] + (float(frame->vertices[j].position[0]) * frame->scale[0]);
+			m_FrameVertices[i][j].z = frame->translate[1] + (float(frame->vertices[j].position[1]) * frame->scale[1]); // z and y need to be switched so the model stands upright
+			m_FrameVertices[i][j].y = frame->translate[2] + (float(frame->vertices[j].position[2]) * frame->scale[2]);
 
-			FrameNormals[i][j] = anorms[frame->vertices[j].normalIndex];
+			m_FrameNormals[i][j] = anorms[frame->vertices[j].normalIndex];
 		}
 	}
 }
@@ -212,60 +50,58 @@ gloperate::PolygonalGeometry md2Loader::createFrame(int number){
 
 	gloperate::PolygonalGeometry Frame;
 
-// Now let's read OpenGL rendering commands
-	glCommands.resize(header.num_glcmds);
-	fseek(model, header.offset_glcmds, SEEK_SET);
-	fread(&glCommands[0], sizeof(int), header.num_glcmds, model); //write the Gl-Commands into array
+// Read OpenGL rendering commands
+	m_glCommands.resize(m_header.num_glcmds);
+	fseek(m_model, m_header.offset_glcmds, SEEK_SET);
+	fread(&m_glCommands[0], sizeof(int), m_header.num_glcmds, m_model); // Write the Gl-Commands into array
 	
 	unsigned int i = 0;
-	while (glCommands[i] != 0){ //ist die Anzahl der zu malenden Vertices 0, sind wir fertig
-		if (glCommands[i] < 0){ //draw with TriangleFan
-			int numVertices = -(glCommands[i]);
-			i += 3; //for now I am leaving out the textureCoordinates
-			unsigned int firstIndex = glCommands[i];
-			i += 3;
-			unsigned int lastPushed = glCommands[i];
-			for (int j = 2; j < numVertices; j++){
-				VaoIndices.push_back(firstIndex);
-				VaoIndices.push_back(lastPushed);
-				i += 3; //get next Vertex
-				VaoIndices.push_back(glCommands[i]);
-				lastPushed = glCommands[i];
-			}
-			i++; //get to the next glCommand
-		}
-		else { //draw with TriangleStrips
-			int numVertices = glCommands[i];
-			i += 3;
-			unsigned int first = glCommands[i];
-			i += 3;
-			unsigned int second = glCommands[i];
-			for (int j = 2; j < numVertices; j++){
-				VaoIndices.push_back(first);
-				VaoIndices.push_back(second); //push back the last two vertices as start of new triangle
+
+	while (m_glCommands[i] != 0){ // We're finished when the number of vertives to draw equals 0
+		// Push vertices so the model is drawn correctliy with GL_triangle	
+		if (m_glCommands[i] < 0){ // Supposed to be drawn with TriangleFan
+				int numVertices = -(m_glCommands[i]);
+				i += 3; // Jump over the Texture Coordinates (only need every third number)
+				unsigned int firstIndex = m_glCommands[i];
 				i += 3;
-				VaoIndices.push_back(glCommands[i]);
-				first = second;
-				second = glCommands[i];
+				unsigned int lastPushed = m_glCommands[i];
+				for (int j = 2; j < numVertices; j++){ 
+					m_VaoIndices.push_back(firstIndex);
+					m_VaoIndices.push_back(lastPushed);
+					i += 3; // Get next Vertex
+					m_VaoIndices.push_back(m_glCommands[i]);
+					lastPushed = m_glCommands[i];
+				}
 			}
-			i++;
+			else { // Supposed to be drawn with TriangleStrips
+				int numVertices = m_glCommands[i];
+				i += 3; 
+				unsigned int first = m_glCommands[i];
+				i += 3;
+				unsigned int second = m_glCommands[i];
+				for (int j = 2; j < numVertices; j++){
+					m_VaoIndices.push_back(first);
+					m_VaoIndices.push_back(second); //push back the last two vertices as start of new triangle
+					i += 3;
+					m_VaoIndices.push_back(m_glCommands[i]);
+					first = second;
+					second = m_glCommands[i];
+				}
+			}
+			i++; // Go to the next glCommand
 		}
 
-
-	}
-
-	Frame.setIndices(VaoIndices);
-	Frame.setVertices(FrameVertices[number]);
-	Frame.setNormals(FrameNormals[number]);
+	Frame.setIndices(m_VaoIndices);
+	Frame.setVertices(m_FrameVertices[number]);
+	Frame.setNormals(m_FrameNormals[number]);
 
 	return Frame;
 }
 
-
-FrameDrawable md2Loader::modelToGPU(){
-	for (int i = 0; i < header.num_frames; i++){
-		Frames.push_back(createFrame(i));
+FrameDrawable* md2Loader::modelToGPU(){
+	for (int i = 0; i < m_header.num_frames; i++){
+		m_Frames.push_back(createFrame(i));
 	}
-	return FrameDrawable(Frames);
+	return new FrameDrawable(m_Frames);
 }
 

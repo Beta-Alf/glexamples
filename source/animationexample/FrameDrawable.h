@@ -26,14 +26,11 @@ public:
 	void draw(int firstFrame, int lastFrame, int fps, float time, const glm::mat4& transform);
 	virtual void draw();
 
-protected:
-
-	int m_numFrames;									
-	gl::GLsizei m_size;																	/**< Number of elements (m_indices) */
-	globjects::ref_ptr<globjects::Buffer>					m_indices;					  /**< Index buffer */
-	std::vector<globjects::ref_ptr<globjects::Buffer>>      m_frame_vertices;            /**< Vertex buffer */
-	std::vector<globjects::ref_ptr<globjects::Buffer>>      m_frame_normals;             /**< Normal buffer (may be empty) */
-	//globjects::ref_ptr<globjects::Buffer>      m_textureCoordinates;  /**< Texture coordinate buffer (may be empty) */
+protected:									
+	gl::GLsizei m_size;																// Number of elements in m_indice 
+	globjects::ref_ptr<globjects::Buffer>					m_indices;				// Index buffer 
+	std::vector<globjects::ref_ptr<globjects::Buffer>>      m_frame_vertices;       // Vertex buffer 
+	std::vector<globjects::ref_ptr<globjects::Buffer>>      m_frame_normals;        // Normal buffer (may be empty) 
 
 	gl::GLint m_transformLocation;
 	gl::GLint m_interpolationLocation;
