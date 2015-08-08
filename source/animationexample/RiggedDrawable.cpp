@@ -31,8 +31,10 @@ RiggedDrawable::RiggedDrawable(const gloperate::PolygonalGeometry &geometry)
     {
         auto vertexBinding = m_vao->binding(3);
         vertexBinding->setAttribute(3);
+        auto length = sizeof(glm::ivec4);
+        length = length;
         vertexBinding->setBuffer(m_vertexBoneIndices,0,sizeof(glm::ivec4));
-        vertexBinding->setFormat(4, gl::GL_INT64_NV);
+        vertexBinding->setIFormat(4, gl::GL_INT, 0);
         m_vao->enable(3);
 
         vertexBinding = m_vao->binding(4);
